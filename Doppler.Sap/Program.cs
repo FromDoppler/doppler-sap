@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
@@ -25,6 +26,10 @@ namespace Doppler.Sap
                 {
                     webBuilder.UseStartup<Startup>();
                 })
-                .ConfigureLogging((hostingContext, builder) => { });
+                .ConfigureLogging((hostingContext, builder) => { })
+                .ConfigureServices(services =>
+                {
+                    services.AddHostedService<TaskRepeater>();
+                });
     }
 }

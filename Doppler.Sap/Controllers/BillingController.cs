@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Doppler.Sap.Models;
+using Doppler.Sap.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Net;
 
 namespace Doppler.Sap.Controllers
 {
@@ -11,19 +14,22 @@ namespace Doppler.Sap.Controllers
     public class BillingController
     {
         private readonly ILogger<BillingController> _logger;
+        private readonly IBillingService _billingService;
 
-        public BillingController(ILogger<BillingController> logger)
-        {
-            _logger = logger;
-        }
+        public BillingController(ILogger<BillingController> logger, IBillingService billingService) =>
+            (_logger, _billingService) = (logger, billingService);
 
         [HttpPost("SetCurrencyRate")]
         [SwaggerOperation(Summary = "Set currency rate in SAP")]
         [SwaggerResponse(200, "The operation was successfully")]
         [SwaggerResponse(400, "The operation failed")]
-        public IActionResult SetCurrencyRate()
+        public async Task<IActionResult> SetCurrencyRate([FromBody] List<CurrencyRateDto> currencyRate)
         {
-            return new OkObjectResult("Works fine!!!");
+            _logger.LogDebug("Setting currency date.");
+
+            await _billingService.SendCurrencyToSap(currencyRate);
+
+            return new OkObjectResult("Successfully");
         }
     }
 }

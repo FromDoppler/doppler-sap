@@ -1,9 +1,12 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Doppler.Sap.DopplerSecurity;
+using Doppler.Sap.Factory;
+using Doppler.Sap.Models;
+using Doppler.Sap.Services;
+using Doppler.Sap.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -65,6 +68,14 @@ namespace Doppler.Sap
 
             services.AddDopplerSecurity();
             services.AddCors();
+
+            services.AddTransient<IBillingService, BillingService>();
+            services.AddSingleton<IQueuingService, QueuingService>();
+            services.AddTransient<ISapService, SapService>();
+            services.Configure<SapConfig>(Configuration.GetSection(nameof(SapConfig)));
+            services.AddTransient<SetCurrencyRateHandler>();
+            services.AddTransient<ISapTaskFactory, SapTaskFactory>();
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
