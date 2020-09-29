@@ -19,7 +19,7 @@ namespace Doppler.Sap.Factory
             var message = new HttpRequestMessage
             {
                 RequestUri = new Uri($"{SapConfig.BaseServerURL}SBOBobService_SetCurrencyRate"),
-                Content = new StringContent(JsonConvert.SerializeObject(dequeuedTask),
+                Content = new StringContent(JsonConvert.SerializeObject(dequeuedTask.CurrencyRate),
                     Encoding.UTF8,
                     "application/json"),
                 Method = HttpMethod.Post

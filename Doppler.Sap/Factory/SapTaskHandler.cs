@@ -14,7 +14,7 @@ namespace Doppler.Sap.Factory
         protected readonly SapConfig SapConfig;
         protected SapLoginCookies SapCookies;
         private DateTime _sessionStartedAt;
-        protected readonly HttpClient Client;
+        public HttpClient Client;
 
         protected SapTaskHandler(IOptions<SapConfig> sapConfig)
         {
