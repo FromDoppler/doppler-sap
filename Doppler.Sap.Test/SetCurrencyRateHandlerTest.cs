@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Doppler.Sap.Factory;
 using Doppler.Sap.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
@@ -26,7 +27,7 @@ namespace Doppler.Sap.Test
                     UserName = "Name"
                 });
 
-            var handler = new SetCurrencyRateHandler(sapConfigMock.Object);
+            var handler = new SetCurrencyRateHandler(sapConfigMock.Object, Mock.Of<ILogger<SetCurrencyRateHandler>>());
 
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
             var httpClient = new HttpClient(httpMessageHandlerMock.Object);

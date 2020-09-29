@@ -5,12 +5,14 @@ using Doppler.Sap.Models;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Doppler.Sap.Factory
 {
     public class SetCurrencyRateHandler : SapTaskHandler
     {
-        public SetCurrencyRateHandler(IOptions<SapConfig> sapConfig) : base(sapConfig) { }
+        public SetCurrencyRateHandler(IOptions<SapConfig> sapConfig, ILogger<SetCurrencyRateHandler> logger)
+            : base(sapConfig, logger) { }
 
         public override async Task<SapTaskResult> Handle(SapTask dequeuedTask)
         {

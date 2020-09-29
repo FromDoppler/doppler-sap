@@ -46,7 +46,6 @@ namespace Doppler.Sap
                     catch (Exception e)
                     {
                         _logger.LogError($"Unexpected error while sending data to Sap exception: {e.StackTrace}");
-                        return;
                     }
                 }
                 else
@@ -58,7 +57,8 @@ namespace Doppler.Sap
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("NormalHostedService stopped.");
+            return Task.CompletedTask;
         }
     }
 }

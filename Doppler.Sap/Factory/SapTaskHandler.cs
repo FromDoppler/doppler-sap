@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Doppler.Sap.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Options;
 
@@ -15,10 +16,12 @@ namespace Doppler.Sap.Factory
         protected SapLoginCookies SapCookies;
         private DateTime _sessionStartedAt;
         public HttpClient Client;
+        private readonly ILogger<SapTaskHandler> _logger;
 
-        protected SapTaskHandler(IOptions<SapConfig> sapConfig)
+        protected SapTaskHandler(IOptions<SapConfig> sapConfig, ILogger<SapTaskHandler> logger)
         {
             SapConfig = sapConfig.Value;
+            _logger = logger;
 
             var handler = new HttpClientHandler
             {
@@ -35,23 +38,24 @@ namespace Doppler.Sap.Factory
         {
             if (SapCookies == null || DateTime.Now > _sessionStartedAt.AddMinutes(30))
             {
-                var sapResponse = await Client.SendAsync(new HttpRequestMessage
+                try
                 {
-                    RequestUri = new Uri($"{SapConfig.BaseServerURL}Login/"),
-                    Content = new StringContent(JsonConvert.SerializeObject(
-                            new SapConfig
-                            {
-                                CompanyDB = SapConfig.CompanyDB,
-                                Password = SapConfig.Password,
-                                UserName = SapConfig.UserName
-                            }),
-                        Encoding.UTF8,
-                        "application/json"),
-                    Method = HttpMethod.Post
-                });
+                    var sapResponse = await Client.SendAsync(new HttpRequestMessage
+                    {
+                        RequestUri = new Uri($"{SapConfig.BaseServerURL}Login/"),
+                        Content = new StringContent(JsonConvert.SerializeObject(
+                                new SapConfig
+                                {
+                                    CompanyDB = SapConfig.CompanyDB,
+                                    Password = SapConfig.Password,
+                                    UserName = SapConfig.UserName
+                                }),
+                            Encoding.UTF8,
+                            "application/json"),
+                        Method = HttpMethod.Post
+                    });
+                    sapResponse.EnsureSuccessStatusCode();
 
-                if (sapResponse.IsSuccessStatusCode)
-                {
                     SapCookies = new SapLoginCookies
                     {
                         B1Session = sapResponse.Headers.GetValues("Set-Cookie").Where(x => x.Contains("B1SESSION"))
@@ -61,9 +65,10 @@ namespace Doppler.Sap.Factory
                     };
                     _sessionStartedAt = DateTime.Now;
                 }
-                else
+                catch (Exception e)
                 {
-                    throw new UnauthorizedAccessException();
+                    _logger.LogError(e, "Error starting session in Sap.");
+                    throw;
                 }
             }
         }
