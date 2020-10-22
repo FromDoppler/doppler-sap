@@ -12,7 +12,7 @@ namespace Doppler.Sap.Controllers
 
         public TestSapController(ITestSapService testSapService) => _testSapService = testSapService;
 
-        [HttpGet("/testSap")]
+        [HttpGet("/test-sap-connection")]
         public async Task<IActionResult> TestSapConnection()
         {
             var response = await _testSapService.TestSapConnection();
