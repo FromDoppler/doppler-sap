@@ -48,16 +48,14 @@ namespace Doppler.Sap.Services
                     Method = HttpMethod.Post
                 });
 
-                sapResponse.EnsureSuccessStatusCode();
                 _logger.LogInformation("[TEST] Connect with Sap correctly");
+                return $"Success {sapResponse.StatusCode}";
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "[TEST] Error starting session in Sap.");
-                return e.Message;
+                return $"Exception: {e.Message}";
             }
-
-            return "Successfully";
         }
     }
 }
