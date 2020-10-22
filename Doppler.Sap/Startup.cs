@@ -86,6 +86,7 @@ namespace Doppler.Sap
             services.AddTransient<ISapTaskFactory, SapTaskFactory>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddTransient<ISlackService, SlackService>();
+            services.AddTransient<ITestSapService, TestSapService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
