@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1.302-buster AS restore
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1.403-buster AS restore
 WORKDIR /src
 COPY ./*.sln ./
 COPY */*.csproj ./
