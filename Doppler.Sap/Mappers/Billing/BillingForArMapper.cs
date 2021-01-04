@@ -74,7 +74,7 @@ namespace Doppler.Sap.Mappers.Billing
 
             if (billingRequest.ExtraEmails > 0)
             {
-                var itemCodeSurplus = _sapBillingItemsService.GetItems(billingRequest.PlanType).Where(x => x.SurplusEmails.Value)
+                var itemCodeSurplus = _sapBillingItemsService.GetItems(billingRequest.PlanType).Where(x => x.SurplusEmails.HasValue && x.SurplusEmails.Value)
                     .Select(x => x.ItemCode)
                     .FirstOrDefault();
 
