@@ -16,7 +16,7 @@ namespace Doppler.Sap.Mappers.Billing
         private const string _costingCode1 = "1000";
         private const string _costingCode2 = "1100";
         private const string _costingCode3 = "USA";
-        private const string _costingCode4 = "NOAPL4";
+        private const string _costingCode4 = "NOAPLI4";
         private const string _currencyCode = "$";
         private const string _transferAccount = "1.1.01.2.003";
         private const string _uClaseCashfloCaja = "Cobros por ventas Doppler";
