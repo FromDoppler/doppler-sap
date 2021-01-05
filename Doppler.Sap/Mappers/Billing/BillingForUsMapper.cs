@@ -72,7 +72,7 @@ namespace Doppler.Sap.Mappers.Billing
                 ItemCode = itemCode,
                 UnitPrice = billingRequest.PlanFee,
                 Currency = _currencyCode,
-                FreeText = $"{_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)} + TAX",
+                FreeText = $"{_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}",
                 DiscountPercent = billingRequest.Discount ?? 0,
                 CostingCode = _costingCode1,
                 CostingCode2 = _costingCode2,
@@ -114,13 +114,13 @@ namespace Doppler.Sap.Mappers.Billing
                 var extraEmailsFreeText = new
                 {
                     ExcessEmails = $"Excess emails {billingRequest.ExtraEmails}",
-                    Amount = billingRequest.ExtraEmailsFee > 0 ? $"{_currencyCode} {billingRequest.ExtraEmailsFeePerUnit} + TAX" : null
+                    Amount = billingRequest.ExtraEmailsFee > 0 ? $"{_currencyCode} {billingRequest.ExtraEmailsFeePerUnit}" : null
                 };
 
 
                 if (billingRequest.ExtraEmailsFee > 0)
                 {
-                    extraEmailItem.FreeText += $" - {_currencyCode} {billingRequest.ExtraEmailsFeePerUnit} + TAX";
+                    extraEmailItem.FreeText += $" - {_currencyCode} {billingRequest.ExtraEmailsFeePerUnit}";
                 }
 
                 extraEmailItem.FreeText += $" - Period {billingRequest.ExtraEmailsPeriodMonth:00} {billingRequest.ExtraEmailsPeriodYear}";
