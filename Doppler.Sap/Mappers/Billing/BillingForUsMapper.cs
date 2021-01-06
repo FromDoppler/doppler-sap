@@ -152,7 +152,7 @@ namespace Doppler.Sap.Mappers.Billing
                 DocCurrency = _currencyCode,
                 TransferAccount = _transferAccount,
                 TransferSum = docTotal,
-                JournalRemarks = $"Pagos recibidos - {cardCode}",
+                JournalRemarks = $"Incoming Payments - {cardCode}",
                 TransferReference = transferReference,
                 U_ClaseCashfloCaja = _uClaseCashfloCaja,
                 PaymentInvoices = new List<SapPaymentInvoiceModel>
