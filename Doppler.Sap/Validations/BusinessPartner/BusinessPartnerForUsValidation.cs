@@ -33,6 +33,13 @@ namespace Doppler.Sap.Validations.BusinessPartner
                 return false;
             }
 
+            if (string.IsNullOrEmpty(dopplerUser.FirstName) && string.IsNullOrEmpty(dopplerUser.LastName))
+            {
+                _logger.LogInformation($"{dopplerUser.Email} won't be sent to SAP because it doesn't have a first name or last name");
+                error = "Invalid first name or last name.";
+                return false;
+            }
+
             if (!dopplerUser.PlanType.HasValue)
             {
                 _logger.LogInformation($"{dopplerUser.Email} won't be sent to SAP because it doesn't have a plan type id");

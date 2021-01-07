@@ -64,6 +64,8 @@ namespace Doppler.Sap.Test
             var dopplerUser = new DopplerUserDto
             {
                 Id = 1,
+                FirstName = "Juan",
+                LastName = "Perez",
                 FederalTaxID = "27111111115",
                 PlanType = 1,
                 BillingSystemId = 2
@@ -122,6 +124,103 @@ namespace Doppler.Sap.Test
         }
 
         [Fact]
+        public void BusinessPartnerService_ShouldBeThrowsValidationException_WhenDopplerUserFirstNameAndLastNameAreNotValidAndSapAr()
+        {
+            var businessPartnerValidations = new List<IBusinessPartnerValidation>
+            {
+                new BusinessPartnerForArValidation(Mock.Of<ILogger<BusinessPartnerForArValidation>>()),
+                new BusinessPartnerForUsValidation(Mock.Of<ILogger<BusinessPartnerForUsValidation>>())
+            };
+
+            var loggerMock = new Mock<ILogger<BusinessPartnerService>>();
+            var queuingServiceMock = new Mock<IQueuingService>();
+
+            var sapConfigMock = new Mock<IOptions<SapConfig>>();
+            sapConfigMock.Setup(x => x.Value)
+                .Returns(new SapConfig
+                {
+                    SapServiceConfigsBySystem = new Dictionary<string, SapServiceConfig>
+                    {
+                        { "AR", new SapServiceConfig {
+                            CompanyDB = "CompanyDb",
+                            Password = "password",
+                            UserName = "Name",
+                            BaseServerUrl = "http://123.123.123/",
+                            BusinessPartnerConfig = new BusinessPartnerConfig
+                            {
+                                Endpoint = "BusinessPartners"
+                            }
+                        }
+                        }
+                    }
+                });
+
+            var businessPartnerService = new BusinessPartnerService(queuingServiceMock.Object, loggerMock.Object, sapConfigMock.Object, businessPartnerValidations);
+
+            var dopplerUser = new DopplerUserDto
+            {
+                Id = 1,
+                FirstName = "",
+                LastName = "",
+                FederalTaxID = "123",
+                PlanType = 1,
+                BillingCountryCode = "AR",
+                BillingSystemId = 9
+            };
+
+            var ex = Assert.ThrowsAsync<ValidationException>(() => businessPartnerService.CreateOrUpdateBusinessPartner(dopplerUser));
+            Assert.Equal("Invalid first name or last name.", ex.Result.Message);
+        }
+
+        [Fact]
+        public void BusinessPartnerService_ShouldBeThrowsValidationException_WhenDopplerUserFirstNameAndLastNameAreNotValidAndSapUs()
+        {
+            var businessPartnerValidations = new List<IBusinessPartnerValidation>
+            {
+                new BusinessPartnerForArValidation(Mock.Of<ILogger<BusinessPartnerForArValidation>>()),
+                new BusinessPartnerForUsValidation(Mock.Of<ILogger<BusinessPartnerForUsValidation>>())
+            };
+
+            var loggerMock = new Mock<ILogger<BusinessPartnerService>>();
+            var queuingServiceMock = new Mock<IQueuingService>();
+
+            var sapConfigMock = new Mock<IOptions<SapConfig>>();
+            sapConfigMock.Setup(x => x.Value)
+                .Returns(new SapConfig
+                {
+                    SapServiceConfigsBySystem = new Dictionary<string, SapServiceConfig>
+                    {
+                        { "US", new SapServiceConfig {
+                            CompanyDB = "CompanyDb",
+                            Password = "password",
+                            UserName = "Name",
+                            BaseServerUrl = "http://123.123.123/",
+                            BusinessPartnerConfig = new BusinessPartnerConfig
+                            {
+                                Endpoint = "BusinessPartners"
+                            }
+                        }
+                        }
+                    }
+                });
+
+            var businessPartnerService = new BusinessPartnerService(queuingServiceMock.Object, loggerMock.Object, sapConfigMock.Object, businessPartnerValidations);
+
+            var dopplerUser = new DopplerUserDto
+            {
+                Id = 1,
+                FirstName = "",
+                LastName = "",
+                FederalTaxID = "123",
+                PlanType = 1,
+                BillingSystemId = 2
+            };
+
+            var ex = Assert.ThrowsAsync<ValidationException>(() => businessPartnerService.CreateOrUpdateBusinessPartner(dopplerUser));
+            Assert.Equal("Invalid first name or last name.", ex.Result.Message);
+        }
+
+        [Fact]
         public void BusinessPartnerService_ShouldBeThrowsValidationException_WhenDopplerUserFederalTaxIDIsNotValid()
         {
             var businessPartnerValidations = new List<IBusinessPartnerValidation>
@@ -158,6 +257,7 @@ namespace Doppler.Sap.Test
             var dopplerUser = new DopplerUserDto
             {
                 Id = 1,
+                LastName = "Perez",
                 FederalTaxID = "",
                 PlanType = 1,
                 BillingCountryCode = "AR",
@@ -205,6 +305,7 @@ namespace Doppler.Sap.Test
             var dopplerUser = new DopplerUserDto
             {
                 Id = 1,
+                FirstName = "Juan",
                 FederalTaxID = "27111111115",
                 BillingCountryCode = "AR",
                 BillingSystemId = 9
