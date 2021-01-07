@@ -99,5 +99,26 @@ namespace Doppler.Sap.Test.Controllers
             Assert.IsType<BadRequestObjectResult>(response);
             Assert.Equal("Invalid plan type value.", ((ObjectResult)response).Value);
         }
+
+        [Fact]
+        public async Task CreateOrUpdateBusinessPartner_ShouldBeHttpStatusBasRequest_WhenDopplerUserFirstNameAndLastNameAreNotValid()
+        {
+            var loggerMock = new Mock<ILogger<BusinessPartnerController>>();
+            var businessPartnerServiceMock = new Mock<IBusinessPartnerService>();
+            businessPartnerServiceMock.Setup(x => x.CreateOrUpdateBusinessPartner(It.IsAny<DopplerUserDto>())).Throws(new ValidationException("Invalid first name or last name."));
+
+            var controller = new BusinessPartnerController(loggerMock.Object, businessPartnerServiceMock.Object);
+
+            // Act
+            var response = await controller.CreateOrUpdateBusinessPartner(new DopplerUserDto
+
+            {
+                PlanType = 1
+            });
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(response);
+            Assert.Equal("Invalid first name or last name.", ((ObjectResult)response).Value);
+        }
     }
 }
