@@ -45,7 +45,7 @@ namespace Doppler.Sap.Factory
             {
                 var sapSystem = SapSystemHelper.GetSapSystemByBillingSystem(dequeuedTask.BillingRequest.BillingSystemId);
                 var sapTaskHandler = _sapServiceSettingsFactory.CreateHandler(sapSystem);
-                var existentInvoice = await sapTaskHandler.TryGetInvoiceByInvoiceId(dequeuedTask.BillingRequest.InvoiceId);
+                var existentInvoice = dequeuedTask.BillingRequest.InvoiceId != 0 ? await sapTaskHandler.TryGetInvoiceByInvoiceId(dequeuedTask.BillingRequest.InvoiceId) : null;
                 var sapResponse = (dequeuedTask.TaskType == Enums.SapTaskEnum.BillingRequest) ? await CreateInvoice(dequeuedTask, sapSystem) : await UpdateInvoice(dequeuedTask, sapSystem, existentInvoice);
 
                 if (sapResponse.IsSuccessful)
