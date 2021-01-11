@@ -71,10 +71,10 @@ namespace Doppler.Sap.Mappers.Billing
             {
                 TaxCode = _defaultTaxCode,
                 ItemCode = itemCode,
-                UnitPrice = billingRequest.PlanFee,
+                UnitPrice = billingRequest.DiscountedAmount.HasValue && billingRequest.DiscountedAmount > 0 ? billingRequest.DiscountedAmount.Value : billingRequest.PlanFee,
                 Currency = _currencyCode,
                 FreeText = $"{_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}",
-                DiscountPercent = billingRequest.Discount ?? 0,
+                DiscountPercent = billingRequest.DiscountedAmount.HasValue && billingRequest.DiscountedAmount > 0 ? 0 : billingRequest.Discount ?? 0,
                 CostingCode = _costingCode1,
                 CostingCode2 = _costingCode2,
                 CostingCode3 = _costingCode3,
