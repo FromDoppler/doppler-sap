@@ -27,10 +27,10 @@ namespace Doppler.Sap.Mappers.Billing
 
         private readonly Dictionary<int?, string> periodicities = new Dictionary<int?, string>
         {
-            {0, "Monthly"},
-            {1, "Quarterly"},
-            {2, "Biannual"},
-            {3, "Annual"}
+            {0, "Period Monthly"},
+            {1, "Period Pay 3 months"},
+            {2, "Period Pay 6 months"},
+            {3, "Period Pay 12 months"}
         };
 
 
