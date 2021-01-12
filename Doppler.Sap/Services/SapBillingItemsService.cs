@@ -24,6 +24,12 @@ namespace Doppler.Sap.Services
                     .Select(x => x.ItemCode)
                     .FirstOrDefault();
 
+            //If not exist the item code we try to get the custom plan
+            if (string.IsNullOrEmpty(itemCode))
+            {
+                itemCode = itemCodesList.Where(x => x.CustomPlan.HasValue && x.CustomPlan.Value).Select(x => x.ItemCode).FirstOrDefault();
+            }
+
             return itemCode;
         }
 
