@@ -67,31 +67,36 @@ namespace Doppler.Sap.Mappers.Billing
 
             var itemCode = _sapBillingItemsService.GetItemCode(billingRequest.PlanType, billingRequest.CreditsOrSubscribersQuantity, billingRequest.IsCustomPlan);
 
-            var planItem = new SapDocumentLineModel
+            var amount = billingRequest.DiscountedAmount.HasValue ? billingRequest.DiscountedAmount.Value : billingRequest.PlanFee;
+
+            if (amount > 0)
             {
-                TaxCode = _defaultTaxCode,
-                ItemCode = itemCode,
-                UnitPrice = billingRequest.DiscountedAmount.HasValue && billingRequest.DiscountedAmount > 0 ? billingRequest.DiscountedAmount.Value : billingRequest.PlanFee,
-                Currency = _currencyCode,
-                FreeText = $"{_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}",
-                DiscountPercent = billingRequest.DiscountedAmount.HasValue && billingRequest.DiscountedAmount > 0 ? 0 : billingRequest.Discount ?? 0,
-                CostingCode = _costingCode1,
-                CostingCode2 = _costingCode2,
-                CostingCode3 = _costingCode3,
-                CostingCode4 = _costingCode4
-            };
+                var planItem = new SapDocumentLineModel
+                {
+                    TaxCode = _defaultTaxCode,
+                    ItemCode = itemCode,
+                    UnitPrice = amount,
+                    Currency = _currencyCode,
+                    FreeText = $"{_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}",
+                    DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : billingRequest.Discount ?? 0,
+                    CostingCode = _costingCode1,
+                    CostingCode2 = _costingCode2,
+                    CostingCode3 = _costingCode3,
+                    CostingCode4 = _costingCode4
+                };
 
-            var freeText = new
-            {
-                Amount = $"{_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}",
-                Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} Plan " : null,
-                Discount = billingRequest.Discount > 0 ? $"{billingRequest.Discount}% OFF" : null,
-                Payment = $"Payment {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}",
-            };
+                var freeText = new
+                {
+                    Amount = $"{_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}",
+                    Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} Plan " : null,
+                    Discount = billingRequest.Discount > 0 ? $"{billingRequest.Discount}% OFF" : null,
+                    Payment = $"Payment {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}",
+                };
 
-            planItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                planItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
 
-            sapSaleOrder.DocumentLines.Add(planItem);
+                sapSaleOrder.DocumentLines.Add(planItem);
+            }
 
             if (billingRequest.ExtraEmails > 0)
             {
