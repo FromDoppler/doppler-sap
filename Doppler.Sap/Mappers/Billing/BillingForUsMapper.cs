@@ -110,7 +110,6 @@ namespace Doppler.Sap.Mappers.Billing
                     ItemCode = itemCodeSurplus,
                     UnitPrice = billingRequest.ExtraEmailsFee,
                     Currency = _currencyCode,
-                    FreeText = $"Excess emails {billingRequest.ExtraEmails}",
                     CostingCode = _costingCode1,
                     CostingCode2 = _costingCode2,
                     CostingCode3 = _costingCode3,
@@ -119,19 +118,12 @@ namespace Doppler.Sap.Mappers.Billing
 
                 var extraEmailsFreeText = new
                 {
-                    ExcessEmails = $"Excess emails {billingRequest.ExtraEmails}",
-                    Amount = billingRequest.ExtraEmailsFee > 0 ? $"{_currencyCode} {billingRequest.ExtraEmailsFeePerUnit}" : null
+                    ExcessEmails = $"Email surplus: {billingRequest.ExtraEmails}.",
+                    Amount = billingRequest.ExtraEmailsFee > 0 ? $"{_currencyCode}{billingRequest.ExtraEmailsFeePerUnit}" : null,
+                    Period = $"Period {billingRequest.ExtraEmailsPeriodMonth:00} {billingRequest.ExtraEmailsPeriodYear}"
                 };
 
-
-                if (billingRequest.ExtraEmailsFee > 0)
-                {
-                    extraEmailItem.FreeText += $" - {_currencyCode} {billingRequest.ExtraEmailsFeePerUnit}";
-                }
-
-                extraEmailItem.FreeText += $" - Period {billingRequest.ExtraEmailsPeriodMonth:00} {billingRequest.ExtraEmailsPeriodYear}";
-
-                var test = string.Join(" - ", new string[] { extraEmailsFreeText.ExcessEmails, extraEmailsFreeText.Amount }.Where(s => !string.IsNullOrEmpty(s)));
+                extraEmailItem.FreeText = string.Join(" - ", new string[] { extraEmailsFreeText.ExcessEmails, extraEmailsFreeText.Amount, extraEmailsFreeText.Period }.Where(s => !string.IsNullOrEmpty(s)));
 
                 sapSaleOrder.DocumentLines.Add(extraEmailItem);
             }
