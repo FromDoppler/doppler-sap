@@ -27,10 +27,10 @@ namespace Doppler.Sap.Mappers.Billing
 
         private readonly Dictionary<int?, string> periodicities = new Dictionary<int?, string>
         {
-            {0, "Period Monthly"},
-            {1, "Period Pay 3 months"},
-            {2, "Period Pay 6 months"},
-            {3, "Period Pay 12 months"}
+            {0, "Monthly"},
+            {1, "3 months"},
+            {2, "6 months"},
+            {3, "12 months"}
         };
 
 
@@ -90,7 +90,7 @@ namespace Doppler.Sap.Mappers.Billing
                     Amount = $"{_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}",
                     Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} Plan " : null,
                     Discount = billingRequest.Discount > 0 ? $"{billingRequest.Discount}% OFF" : null,
-                    Payment = $"Payment {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}",
+                    Payment = $"Period {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}",
                 };
 
                 planItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
