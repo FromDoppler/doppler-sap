@@ -170,7 +170,7 @@ namespace Doppler.Sap.Factory
         {
             var message = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{_sapServiceConfig.BaseServerUrl}{_sapServiceConfig.BillingConfig.Endpoint}?$filter=U_DPL_INV_ID eq {invoiceId}"),
+                RequestUri = new Uri($"{_sapServiceConfig.BaseServerUrl}{_sapServiceConfig.BillingConfig.Endpoint}?$filter=U_DPL_INV_ID eq {invoiceId} and Cancelled eq 'tNO'"),
                 Method = HttpMethod.Get
             };
 
