@@ -133,6 +133,30 @@ namespace Doppler.Sap.Services
             }
         }
 
+        public async Task CreateCreditNote(CreditNoteRequest creditNotesRequest)
+        {
+
+            try
+            {
+                var sapSystem = SapSystemHelper.GetSapSystemByBillingSystem(creditNotesRequest.BillingSystemId);
+                var validator = GetValidator(sapSystem);
+                validator.ValidateCreditNoteRequest(creditNotesRequest);
+
+                _queuingService.AddToTaskQueue(
+                    new SapTask
+                    {
+                        CreditNoteRequest = creditNotesRequest,
+                        TaskType = SapTaskEnum.CreateCreditNote
+                    }
+                );
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed at generating create credit note request for user: {creditNotesRequest.ClientId}.", e);
+                await _slackService.SendNotification($"Failed at generating create credit note request for user: {creditNotesRequest.ClientId}. Error: {e.Message}");
+            }
+        }
+
         private IBillingMapper GetMapper(string sapSystem)
         {
             // Check if exists business partner mapper for the sapSystem

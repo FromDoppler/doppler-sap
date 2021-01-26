@@ -52,5 +52,15 @@ namespace Doppler.Sap.Controllers
 
             return new OkObjectResult("Successfully");
         }
+
+        [HttpPost("CreateCreditNote")]
+        public async Task<IActionResult> CreateCreditNote([FromBody] CreditNoteRequest creditNoteRequest)
+        {
+            _logger.LogDebug("Creating Credit Note");
+
+            await _billingService.CreateCreditNote(creditNoteRequest);
+
+            return new OkObjectResult("Successfully");
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace Doppler.Sap.Enums
         CreateOrUpdateBusinessPartner = 1,
         BillingRequest = 2,
         CurrencyRate = 3,
-        UpdateBilling = 4
+        UpdateBilling = 4,
+        CreateCreditNote = 5
     }
 }

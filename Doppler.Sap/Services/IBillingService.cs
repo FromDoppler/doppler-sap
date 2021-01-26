@@ -10,5 +10,6 @@ namespace Doppler.Sap.Services
         Task CreateBillingRequest(List<BillingRequest> billingRequests);
 
         Task UpdatePaymentStatus(UpdatePaymentStatusRequest updateBillingRequest);
+        Task CreateCreditNote(CreditNoteRequest creditNotesRequest);
     }
 }

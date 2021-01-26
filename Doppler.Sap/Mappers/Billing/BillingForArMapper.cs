@@ -1,3 +1,4 @@
+using Doppler.Sap.Enums;
 using Doppler.Sap.Models;
 using Doppler.Sap.Services;
 using Doppler.Sap.Utils;
@@ -15,6 +16,7 @@ namespace Doppler.Sap.Mappers.Billing
         private const string _costingCode2 = "1100";
         private const string _costingCode3 = "Arg";
         private const string _costingCode4 = "NOAPLI4";
+        private const int _invoiceType = 13;
 
         private readonly ISapBillingItemsService _sapBillingItemsService;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -129,6 +131,56 @@ namespace Doppler.Sap.Mappers.Billing
                 TransactionApproved = updateBillingRequest.TransactionApproved,
                 TransferReference = updateBillingRequest.TransferReference
             };
+        }
+
+
+        public SapCreditNoteModel MapToSapCreditNote(SapSaleOrderInvoiceResponse sapSaleOrderInvoiceResponse, int creditNoteType)
+        {
+            var sapCreditNoteModel = new SapCreditNoteModel
+            {
+                NumAtCard = sapSaleOrderInvoiceResponse.NumAtCard ?? "",
+                U_DPL_INV_ID = sapSaleOrderInvoiceResponse.U_DPL_INV_ID,
+                DocumentLines = new List<SapCreditNoteDocumentLineModel>(),
+                DocDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
+                DocDueDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
+                TaxDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
+                InvoiceId = sapSaleOrderInvoiceResponse.U_DPL_INV_ID
+            };
+
+            var creditNoteData = (creditNoteType == (int)CreditNoteEnum.NoRefund)
+                ? new
+                {
+                    FreeText = $"Cancela la factura: {sapSaleOrderInvoiceResponse.DocNum}."
+                }
+                : new
+                {
+                    FreeText = string.Empty
+                };
+
+            foreach (SapDocumentLineResponse line in sapSaleOrderInvoiceResponse.DocumentLines)
+            {
+                SapCreditNoteDocumentLineModel creditNoteLine = new SapCreditNoteDocumentLineModel
+                {
+                    BaseEntry = sapSaleOrderInvoiceResponse.DocEntry,
+                    BaseLine = line.LineNum,
+                    BaseType = _invoiceType,
+                    CostingCode = line.CostingCode,
+                    CostingCode2 = line.CostingCode2,
+                    CostingCode3 = line.CostingCode3,
+                    CostingCode4 = line.CostingCode4,
+                    Currency = line.Currency,
+                    DiscountPercent = (int)line.DiscountPercent,
+                    FreeText = creditNoteData.FreeText,
+                    ItemCode = line.ItemCode,
+                    Quantity = line.Quantity,
+                    TaxCode = line.TaxCode,
+                    UnitPrice = line.UnitPrice
+                };
+
+                sapCreditNoteModel.DocumentLines.Add(creditNoteLine);
+            }
+
+            return sapCreditNoteModel;
         }
     }
 }

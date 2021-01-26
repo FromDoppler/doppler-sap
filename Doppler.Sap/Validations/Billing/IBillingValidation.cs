@@ -13,5 +13,7 @@ namespace Doppler.Sap.Validations.Billing
         void ValidateRequest(BillingRequest dopplerBillingRequest);
 
         void ValidateUpdateRequest(UpdatePaymentStatusRequest updateBillingRequest);
+
+        void ValidateCreditNoteRequest(CreditNoteRequest creditNoteRequest);
     }
 }

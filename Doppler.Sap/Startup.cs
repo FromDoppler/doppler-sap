@@ -94,6 +94,7 @@ namespace Doppler.Sap
 
             services.AddTransient<SetCurrencyRateHandler>();
             services.AddTransient<BillingRequestHandler>();
+            services.AddTransient<CreditNoteHandler>();
             services.AddTransient<CreateOrUpdateBusinessPartnerHandler>();
             services.AddTransient<ISapTaskFactory, SapTaskFactory>();
             services.AddTransient<ISapServiceSettingsFactory, SapServiceSettingsFactory>();
