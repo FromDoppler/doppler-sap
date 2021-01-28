@@ -20,5 +20,10 @@ namespace Doppler.Sap.Services
         {
             return Task.CompletedTask;
         }
+
+        public Task CreateCreditNote(CreditNoteRequest creditNotesRequest)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

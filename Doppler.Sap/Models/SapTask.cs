@@ -9,6 +9,7 @@ namespace Doppler.Sap.Models
         public DopplerUserDto DopplerUser { get; set; }
         public SapCurrencyRate CurrencyRate { get; set; }
         public SapSaleOrderModel BillingRequest { get; set; }
+        public CreditNoteRequest CreditNoteRequest { get; set; }
         public SapTaskEnum TaskType { get; set; }
     }
 }

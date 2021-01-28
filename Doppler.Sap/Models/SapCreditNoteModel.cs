@@ -1,21 +1,21 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Doppler.Sap.Models
 {
-    public class SapSaleOrderInvoiceResponse
+    public class SapCreditNoteModel
     {
+        public int InvoiceId { get; set; }
         public string CardCode { get; set; }
-        public int DocEntry { get; set; }
-        public DateTime DocDate { get; set; }
-        public decimal DocTotal { get; set; }
-        public int DocNum { get; set; }
+        public string DocDate { get; set; }
+        public string DocDueDate { get; set; }
+        public double DocTotal { get; set; }
         public string TaxDate { get; set; }
         public string NumAtCard { get; set; }
         public string U_DPL_RECURRING_SERV { get; set; }
-        public List<SapDocumentLineResponse> DocumentLines { get; set; }
+        public List<SapCreditNoteDocumentLineModel> DocumentLines { get; set; }
+        public string FiscalID { get; set; }
+        public int UserId { get; set; }
+        public int PlanType { get; set; }
         public int BillingSystemId { get; set; }
         public string U_DPL_CARD_HOLDER { get; set; }
         public string U_DPL_CARD_NUMBER { get; set; }

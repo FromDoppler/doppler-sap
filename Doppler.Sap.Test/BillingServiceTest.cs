@@ -382,5 +382,142 @@ namespace Doppler.Sap.Test
             queuingServiceMock.Verify(x => x.AddToTaskQueue(It.IsAny<SapTask>()), Times.Never);
             slackServiceMock.Verify(x => x.SendNotification(It.IsAny<string>()), Times.Once);
         }
+
+        [Fact]
+        public async Task BillingService_ShouldBeAddOneTaskInQueue_WhenCreateCreditNotesHasOneValidElement()
+        {
+            var billingValidations = new List<IBillingValidation>
+            {
+                new BillingForArValidation(Mock.Of<ILogger<BillingForArValidation>>()),
+                new BillingForUsValidation(Mock.Of<ILogger<BillingForUsValidation>>())
+            };
+
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForArMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations),
+                new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations)
+            };
+
+            var queuingServiceMock = new Mock<IQueuingService>();
+            var billingService = new BillingService(queuingServiceMock.Object,
+                Mock.Of<IDateTimeProvider>(),
+                Mock.Of<ILogger<BillingService>>(),
+                Mock.Of<ISlackService>(),
+                billingMappers,
+                billingValidations);
+
+            var creditNote = new CreditNoteRequest { Amount = 100, BillingSystemId = 2, ClientId = 1, InvoiceId = 1, Type = 1 };
+
+            await billingService.CreateCreditNote(creditNote);
+
+            queuingServiceMock.Verify(x => x.AddToTaskQueue(It.IsAny<SapTask>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task BillingService_ShouldBeNotAddOneTaskInQueue_WhenCreateCreditNotesHasOneElementWithInvalidInvoiceId()
+        {
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForArMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations),
+                new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations)
+            };
+
+            var slackServiceMock = new Mock<ISlackService>();
+            slackServiceMock.Setup(x => x.SendNotification(It.IsAny<string>())).Returns(Task.CompletedTask);
+
+            var queuingServiceMock = new Mock<IQueuingService>();
+
+            var billingService = new BillingService(queuingServiceMock.Object,
+                Mock.Of<IDateTimeProvider>(),
+                Mock.Of<ILogger<BillingService>>(),
+                slackServiceMock.Object,
+                billingMappers,
+                null);
+
+            var creditNote = new CreditNoteRequest { Amount = 100, BillingSystemId = 2, ClientId = 1, InvoiceId = 0, Type = 1 };
+
+            await billingService.CreateCreditNote(creditNote);
+
+            queuingServiceMock.Verify(x => x.AddToTaskQueue(It.IsAny<SapTask>()), Times.Never);
+            slackServiceMock.Verify(x => x.SendNotification(It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task BillingService_ShouldBeNotAddOneTaskInQueue_WhenCreateCreditNotesHasOneElementWithInvalidBillingSystemId()
+        {
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForArMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations),
+                new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations)
+            };
+
+            var slackServiceMock = new Mock<ISlackService>();
+            slackServiceMock.Setup(x => x.SendNotification(It.IsAny<string>())).Returns(Task.CompletedTask);
+
+            var queuingServiceMock = new Mock<IQueuingService>();
+
+            var billingService = new BillingService(queuingServiceMock.Object,
+                Mock.Of<IDateTimeProvider>(),
+                Mock.Of<ILogger<BillingService>>(),
+                slackServiceMock.Object,
+                billingMappers,
+                null);
+
+            var creditNote = new CreditNoteRequest { Amount = 100, BillingSystemId = 0, ClientId = 1, InvoiceId = 1, Type = 1 };
+
+            await billingService.CreateCreditNote(creditNote);
+
+            queuingServiceMock.Verify(x => x.AddToTaskQueue(It.IsAny<SapTask>()), Times.Never);
+            slackServiceMock.Verify(x => x.SendNotification(It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task BillingService_ShouldBeNotAddOneTaskInQueue_WhenCreateCreditNotesHasOneElementWithInvalidClientId()
+        {
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForArMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations),
+                new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations)
+            };
+
+            var slackServiceMock = new Mock<ISlackService>();
+            slackServiceMock.Setup(x => x.SendNotification(It.IsAny<string>())).Returns(Task.CompletedTask);
+
+            var queuingServiceMock = new Mock<IQueuingService>();
+
+            var billingService = new BillingService(queuingServiceMock.Object,
+                Mock.Of<IDateTimeProvider>(),
+                Mock.Of<ILogger<BillingService>>(),
+                slackServiceMock.Object,
+                billingMappers,
+                null);
+
+            var creditNote = new CreditNoteRequest { Amount = 100, BillingSystemId = 2, ClientId = 0, InvoiceId = 1, Type = 1 };
+
+            await billingService.CreateCreditNote(creditNote);
+
+            queuingServiceMock.Verify(x => x.AddToTaskQueue(It.IsAny<SapTask>()), Times.Never);
+            slackServiceMock.Verify(x => x.SendNotification(It.IsAny<string>()), Times.Once);
+        }
     }
 }

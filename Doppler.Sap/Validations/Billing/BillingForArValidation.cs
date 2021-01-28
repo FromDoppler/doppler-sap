@@ -70,5 +70,26 @@ namespace Doppler.Sap.Validations.Billing
                 throw new ArgumentException("Value can not be null", "InvoiceId");
             }
         }
+
+        public void ValidateCreditNoteRequest(CreditNoteRequest creditNoteRequest)
+        {
+            if (creditNoteRequest.InvoiceId.Equals(default))
+            {
+                _logger.LogError("Create Credit Note Request won't be sent to SAP because it doesn't have the invoice's Id.");
+                throw new ArgumentException("Value can not be null", "InvoiceId");
+            }
+
+            if (creditNoteRequest.BillingSystemId.Equals(default))
+            {
+                _logger.LogError("Create Credit Note Request won't be sent to SAP because it doesn't have the billing system's Id.");
+                throw new ArgumentException("Value can not be null", "BillingSystemId");
+            }
+
+            if (creditNoteRequest.ClientId.Equals(default))
+            {
+                _logger.LogError("Create Credit Note Request won't be sent to SAP because it doesn't have the client's Id.");
+                throw new ArgumentException("Value can not be null", "ClientId");
+            }
+        }
     }
 }
