@@ -16,6 +16,7 @@ namespace Doppler.Sap.Mappers
             {
                 NumAtCard = billingRequest.PurchaseOrder ?? "",
                 U_DPL_RECURRING_SERV = billingRequest.IsPlanUpgrade ? "N" : "Y",
+                U_DPL_FIRST_PURCHASE = billingRequest.IsFirstPurchase ? "Y" : "N",
                 DocumentLines = new List<SapDocumentLineModel>()
             };
             var currencyCode = Dictionary.CurrencyDictionary.TryGetValue(billingRequest.Currency, out var code) ? code : "";

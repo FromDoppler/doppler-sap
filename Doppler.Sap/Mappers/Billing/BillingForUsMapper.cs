@@ -54,6 +54,7 @@ namespace Doppler.Sap.Mappers.Billing
             {
                 NumAtCard = billingRequest.PurchaseOrder ?? "",
                 U_DPL_RECURRING_SERV = billingRequest.IsPlanUpgrade ? "N" : "Y",
+                U_DPL_FIRST_PURCHASE = billingRequest.IsFirstPurchase ? "Y" : "N",
                 U_DPL_CARD_HOLDER = billingRequest.CardHolder,
                 U_DPL_CARD_NUMBER = billingRequest.CardNumber,
                 U_DPL_CARD_TYPE = billingRequest.CardType,
