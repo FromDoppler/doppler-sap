@@ -40,6 +40,7 @@ namespace Doppler.Sap.Mappers.Billing
             {
                 NumAtCard = billingRequest.PurchaseOrder ?? "",
                 U_DPL_RECURRING_SERV = billingRequest.IsPlanUpgrade ? "N" : "Y",
+                U_DPL_FIRST_PURCHASE = billingRequest.IsFirstPurchase ? "Y" : "N",
                 DocumentLines = new List<SapDocumentLineModel>(),
                 DocDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
                 DocDueDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
