@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Doppler.Sap.Mappers.Billing;
 using Doppler.Sap.Models;
@@ -7,7 +8,6 @@ using Doppler.Sap.Services;
 using Doppler.Sap.Utils;
 using Doppler.Sap.Validations.Billing;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -18,7 +18,6 @@ namespace Doppler.Sap.Test
         [Fact]
         public async Task BillingService_ShouldNotBeAddTaskInQueue_WhenCurrencyRateListIsEmpty()
         {
-            var sapConfigMock = new Mock<IOptions<SapConfig>>();
             var timeZoneConfigurations = new TimeZoneConfigurations
             {
                 InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
@@ -51,7 +50,6 @@ namespace Doppler.Sap.Test
         [Fact]
         public async Task BillingService_ShouldBeAddTaskInQueue_WhenCurrencyRateListHasOneValidElement()
         {
-            var sapConfigMock = new Mock<IOptions<SapConfig>>();
             var timeZoneConfigurations = new TimeZoneConfigurations
             {
                 InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
@@ -93,7 +91,6 @@ namespace Doppler.Sap.Test
         [Fact]
         public async Task BillingService_ShouldBeAddThreeTasksInQueue_WhenListHasOneValidElementWithFridayDay()
         {
-            var sapConfigMock = new Mock<IOptions<SapConfig>>();
             var timeZoneConfigurations = new TimeZoneConfigurations
             {
                 InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
@@ -152,7 +149,6 @@ namespace Doppler.Sap.Test
                 new BillingForUsValidation(Mock.Of<ILogger<BillingForUsValidation>>())
             };
 
-            var sapConfigMock = new Mock<IOptions<SapConfig>>();
             var timeZoneConfigurations = new TimeZoneConfigurations
             {
                 InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
@@ -197,7 +193,6 @@ namespace Doppler.Sap.Test
         [Fact]
         public async Task BillingService_ShouldBeAddOneTaskInQueue_WhenBillingRequestListHasOneInvalidElement()
         {
-            var sapConfigMock = new Mock<IOptions<SapConfig>>();
             var timeZoneConfigurations = new TimeZoneConfigurations
             {
                 InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
@@ -242,7 +237,6 @@ namespace Doppler.Sap.Test
         [Fact]
         public async Task BillingService_ShouldBeAddOneTaskInQueue_WhenBillingRequestListHasOneInvalidCountryCodeElement()
         {
-            var sapConfigMock = new Mock<IOptions<SapConfig>>();
             var timeZoneConfigurations = new TimeZoneConfigurations
             {
                 InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
@@ -303,7 +297,6 @@ namespace Doppler.Sap.Test
                 new BillingForUsValidation(Mock.Of<ILogger<BillingForUsValidation>>())
             };
 
-            var sapConfigMock = new Mock<IOptions<SapConfig>>();
             var timeZoneConfigurations = new TimeZoneConfigurations
             {
                 InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
@@ -344,7 +337,6 @@ namespace Doppler.Sap.Test
         [Fact]
         public async Task BillingService_ShouldBeNotAddOneTaskInQueue_WhenUpdateBillingRequestHasOneInvalidElement()
         {
-            var sapConfigMock = new Mock<IOptions<SapConfig>>();
             var timeZoneConfigurations = new TimeZoneConfigurations
             {
                 InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
@@ -622,6 +614,210 @@ namespace Doppler.Sap.Test
 
             queuingServiceMock.Verify(x => x.AddToTaskQueue(It.IsAny<SapTask>()), Times.Never);
             slackServiceMock.Verify(x => x.SendNotification(It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task BillingService_Ar_ShouldBeAddInvoiceWithoutPeriodicityProperty_WhenClientIsPrepaid()
+        {
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForArMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations),
+            };
+
+            var slackServiceMock = new Mock<ISlackService>();
+            slackServiceMock.Setup(x => x.SendNotification(It.IsAny<string>())).Returns(Task.CompletedTask);
+            var queuingServiceMock = new Mock<IQueuingService>();
+
+            var billingValidations = new List<IBillingValidation>
+            {
+                new BillingForArValidation(Mock.Of<ILogger<BillingForArValidation>>())
+            };
+
+            var billingService = new BillingService(queuingServiceMock.Object,
+                Mock.Of<IDateTimeProvider>(),
+                Mock.Of<ILogger<BillingService>>(),
+                slackServiceMock.Object,
+                billingMappers,
+                billingValidations);
+
+            var billingRequestList = new List<BillingRequest>
+            {
+                new BillingRequest
+                {
+                    Id = 1,
+                    BillingSystemId = 9,
+                    FiscalID = "123",
+                    Periodicity = null,
+                    PlanFee = 15
+                }
+            };
+
+            await billingService.CreateBillingRequest(billingRequestList);
+
+            queuingServiceMock.Verify(x => x.AddToTaskQueue(
+                    It.Is<SapTask>(y => y.BillingRequest.DocumentLines.FirstOrDefault().FreeText == "USD 15 + IMP")),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task BillingService_Us_ShouldBeAddInvoiceWithoutPeriodicityProperty_WhenClientIsPrepaid()
+        {
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations),
+            };
+
+            var slackServiceMock = new Mock<ISlackService>();
+            slackServiceMock.Setup(x => x.SendNotification(It.IsAny<string>())).Returns(Task.CompletedTask);
+            var queuingServiceMock = new Mock<IQueuingService>();
+
+            var billingValidations = new List<IBillingValidation>
+            {
+                new BillingForUsValidation(Mock.Of<ILogger<BillingForUsValidation>>())
+            };
+
+            var billingService = new BillingService(queuingServiceMock.Object,
+                Mock.Of<IDateTimeProvider>(),
+                Mock.Of<ILogger<BillingService>>(),
+                slackServiceMock.Object,
+                billingMappers,
+                billingValidations);
+
+            var billingRequestList = new List<BillingRequest>
+            {
+                new BillingRequest
+                {
+                    Id = 1,
+                    BillingSystemId = 2,
+                    FiscalID = "123",
+                    Periodicity = null,
+                    PlanFee = 15
+                }
+            };
+
+            await billingService.CreateBillingRequest(billingRequestList);
+
+            queuingServiceMock.Verify(x => x.AddToTaskQueue(
+                    It.Is<SapTask>(y => y.BillingRequest.DocumentLines.FirstOrDefault().FreeText == "$ 15")),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task BillingService_Ar_ShouldBeAddInvoiceWithoutPeriodicityProperty_WhenClientIsMonthly()
+        {
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForArMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations),
+            };
+
+            var slackServiceMock = new Mock<ISlackService>();
+            slackServiceMock.Setup(x => x.SendNotification(It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+
+            var queuingServiceMock = new Mock<IQueuingService>();
+
+            var billingValidations = new List<IBillingValidation>
+            {
+                new BillingForArValidation(Mock.Of<ILogger<BillingForArValidation>>())
+            };
+
+            var billingService = new BillingService(queuingServiceMock.Object,
+                Mock.Of<IDateTimeProvider>(),
+                Mock.Of<ILogger<BillingService>>(),
+                slackServiceMock.Object,
+                billingMappers,
+                billingValidations);
+
+            var billingRequestList = new List<BillingRequest>
+            {
+                new BillingRequest
+                {
+                    Id = 1,
+                    BillingSystemId = 9,
+                    FiscalID = "123",
+                    Periodicity = 0,
+                    PlanFee = 15
+                }
+            };
+
+            // Act
+            await billingService.CreateBillingRequest(billingRequestList);
+
+            // Assert
+            queuingServiceMock.Verify(x => x.AddToTaskQueue(
+                    It.Is<SapTask>(y => y.BillingRequest.DocumentLines.FirstOrDefault()
+                        .FreeText == "USD 15 + IMP - Plan Mensual - Abono 00 0")),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task BillingService_Us_ShouldBeAddInvoiceWithoutPeriodicityProperty_WhenClientIsMonthly()
+        {
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(),
+                    Mock.Of<IDateTimeProvider>(),
+                    timeZoneConfigurations),
+            };
+
+            var slackServiceMock = new Mock<ISlackService>();
+            slackServiceMock.Setup(x => x.SendNotification(It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+
+            var queuingServiceMock = new Mock<IQueuingService>();
+
+            var billingValidations = new List<IBillingValidation>
+            {
+                new BillingForUsValidation(Mock.Of<ILogger<BillingForUsValidation>>())
+            };
+
+            var billingService = new BillingService(queuingServiceMock.Object,
+                Mock.Of<IDateTimeProvider>(),
+                Mock.Of<ILogger<BillingService>>(),
+                slackServiceMock.Object,
+                billingMappers,
+                billingValidations);
+
+            var billingRequestList = new List<BillingRequest>
+            {
+                new BillingRequest
+                {
+                    Id = 1,
+                    BillingSystemId = 2,
+                    FiscalID = "123",
+                    Periodicity = 0,
+                    PlanFee = 15
+                }
+            };
+
+            // Act
+            await billingService.CreateBillingRequest(billingRequestList);
+
+            // Assert
+            queuingServiceMock.Verify(x => x.AddToTaskQueue(
+                    It.Is<SapTask>(y => y.BillingRequest.DocumentLines.FirstOrDefault()
+                        .FreeText == "$ 15 -  Monthly Plan  - Period 00 0")),
+                Times.Once);
         }
     }
 }
