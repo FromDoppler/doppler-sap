@@ -2,7 +2,6 @@ using Doppler.Sap.Enums;
 using Doppler.Sap.Models;
 using Doppler.Sap.Services;
 using Doppler.Sap.Utils;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -171,6 +170,36 @@ namespace Doppler.Sap.Mappers.Billing
             return newIncomingPayment;
         }
 
+        public SapOutgoingPaymentModel MapSapOutgoingPayment(SapCreditNoteResponse sapCreditNoteResponse, string transferReference)
+        {
+            var newIncomingPayment = new SapOutgoingPaymentModel
+            {
+                DocDate = sapCreditNoteResponse.DocDate.ToString("yyyy-MM-dd"),
+                TransferDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
+                TaxDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
+                CardCode = sapCreditNoteResponse.CardCode,
+                DocType = "rCustomer",
+                DocCurrency = _currencyCode,
+                TransferAccount = _transferAccount,
+                TransferSum = sapCreditNoteResponse.DocTotal,
+                JournalRemarks = $"Outgoing Payments - {sapCreditNoteResponse.CardCode}",
+                TransferReference = transferReference,
+                U_ClaseCashfloCaja = _uClaseCashfloCaja,
+                PaymentInvoices = new List<SapOutgoingPaymentLineModel>
+                {
+                    new SapOutgoingPaymentLineModel
+                    {
+                        LineNum = 0,
+                        SumApplied = sapCreditNoteResponse.DocTotal,
+                        DocEntry = sapCreditNoteResponse.DocEntry,
+                        InvoiceType = "it_CredItnote"
+                    }
+                }
+            };
+
+            return newIncomingPayment;
+        }
+
         public SapSaleOrderModel MapDopplerUpdateBillingRequestToSapSaleOrder(UpdatePaymentStatusRequest updateBillingRequest)
         {
             return new SapSaleOrderModel
@@ -184,7 +213,7 @@ namespace Doppler.Sap.Mappers.Billing
             };
         }
 
-        public SapCreditNoteModel MapToSapCreditNote(SapSaleOrderInvoiceResponse sapSaleOrderInvoiceResponse, int creditNoteType)
+        public SapCreditNoteModel MapToSapCreditNote(SapSaleOrderInvoiceResponse sapSaleOrderInvoiceResponse, CreditNoteRequest creditNoteRequest)
         {
             var sapCreditNoteModel = new SapCreditNoteModel
             {
@@ -193,49 +222,90 @@ namespace Doppler.Sap.Mappers.Billing
                 U_DPL_CARD_HOLDER = sapSaleOrderInvoiceResponse.U_DPL_CARD_HOLDER,
                 U_DPL_CARD_NUMBER = sapSaleOrderInvoiceResponse.U_DPL_CARD_NUMBER,
                 U_DPL_CARD_TYPE = sapSaleOrderInvoiceResponse.U_DPL_CARD_TYPE,
-                U_DPL_CARD_ERROR_COD = sapSaleOrderInvoiceResponse.U_DPL_CARD_ERROR_COD,
-                U_DPL_CARD_ERROR_DET = sapSaleOrderInvoiceResponse.U_DPL_CARD_ERROR_DET,
-                U_DPL_INV_ID = sapSaleOrderInvoiceResponse.U_DPL_INV_ID,
+                U_DPL_CARD_ERROR_COD = creditNoteRequest.CardErrorCode,
+                U_DPL_CARD_ERROR_DET = creditNoteRequest.CardErrorDetail,
+                U_DPL_CN_ID = creditNoteRequest.CreditNoteId,
                 DocumentLines = new List<SapCreditNoteDocumentLineModel>(),
                 DocDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
                 DocDueDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
                 TaxDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
-                InvoiceId = sapSaleOrderInvoiceResponse.U_DPL_INV_ID,
-                CardCode = sapSaleOrderInvoiceResponse.CardCode
+                CreditNoteId = creditNoteRequest.CreditNoteId,
+                CardCode = sapSaleOrderInvoiceResponse.CardCode,
+                TransferReference = creditNoteRequest.TransferReference
             };
 
-            var creditNoteData = (creditNoteType == (int)CreditNoteEnum.NoRefund)
-                ? new
-                {
-                    FreeText = $"Cancel invoice: {sapSaleOrderInvoiceResponse.DocNum}."
-                }
-                : new
-                {
-                    FreeText = string.Empty
-                };
+            var balance = creditNoteRequest.Amount;
+            var isPartial = sapSaleOrderInvoiceResponse.DocTotal > Convert.ToDecimal(creditNoteRequest.Amount);
 
             foreach (SapDocumentLineResponse line in sapSaleOrderInvoiceResponse.DocumentLines)
             {
+                if (balance == 0)
+                    break;
+
+                var amount = (line.UnitPrice > balance) ? balance : line.UnitPrice;
                 SapCreditNoteDocumentLineModel creditNoteLine = new SapCreditNoteDocumentLineModel
                 {
-                    BaseEntry = sapSaleOrderInvoiceResponse.DocEntry,
-                    BaseLine = line.LineNum,
-                    BaseType = _invoiceType,
+                    BaseEntry = (creditNoteRequest.Type == (int)CreditNoteEnum.NoRefund) ? sapSaleOrderInvoiceResponse.DocEntry : (int?)null,
+                    BaseLine = (creditNoteRequest.Type == (int)CreditNoteEnum.NoRefund) ? line.LineNum : (int?)null,
+                    BaseType = (creditNoteRequest.Type == (int)CreditNoteEnum.NoRefund) ? _invoiceType : (int?)null,
                     CostingCode = line.CostingCode,
                     CostingCode2 = line.CostingCode2,
                     CostingCode3 = line.CostingCode3,
                     CostingCode4 = line.CostingCode4,
                     Currency = line.Currency,
                     DiscountPercent = (int)line.DiscountPercent,
-                    FreeText = creditNoteData.FreeText,
+                    FreeText = isPartial ? $"Partial refund - Invoice: {sapSaleOrderInvoiceResponse.DocNum}." : $"Cancel invoice: {sapSaleOrderInvoiceResponse.DocNum}.",
                     ItemCode = line.ItemCode,
                     Quantity = line.Quantity,
                     TaxCode = line.TaxCode,
-                    UnitPrice = line.UnitPrice
+                    UnitPrice = amount
                 };
 
                 sapCreditNoteModel.DocumentLines.Add(creditNoteLine);
+
+                balance -= amount;
             }
+
+            return sapCreditNoteModel;
+        }
+
+        public CreditNoteRequest MapUpdateCreditNotePaymentStatusRequestToCreditNoteRequest(UpdateCreditNotePaymentStatusRequest updateCreditNotePaymentStatusRequest)
+        {
+            return new CreditNoteRequest
+            {
+                BillingSystemId = updateCreditNotePaymentStatusRequest.BillingSystemId,
+                CreditNoteId = updateCreditNotePaymentStatusRequest.CreditNoteId,
+                CardErrorCode = updateCreditNotePaymentStatusRequest.CardErrorCode,
+                CardErrorDetail = updateCreditNotePaymentStatusRequest.CardErrorDetail,
+                TransactionApproved = updateCreditNotePaymentStatusRequest.TransactionApproved,
+                TransferReference = updateCreditNotePaymentStatusRequest.TransferReference,
+                Type = updateCreditNotePaymentStatusRequest.Type
+            };
+        }
+
+        public SapCreditNoteModel MapToSapCreditNote(CreditNoteRequest creditNoteRequest)
+        {
+            var sapCreditNoteModel = new SapCreditNoteModel
+            {
+                U_DPL_CN_ID = creditNoteRequest.CreditNoteId,
+                BillingSystemId = creditNoteRequest.BillingSystemId,
+                CreditNoteId = creditNoteRequest.CreditNoteId,
+                U_DPL_CARD_ERROR_COD = creditNoteRequest.CardErrorCode,
+                U_DPL_CARD_ERROR_DET = creditNoteRequest.CardErrorDetail,
+                TransactionApproved = creditNoteRequest.TransactionApproved,
+                TransferReference = creditNoteRequest.TransferReference
+            };
+
+            return sapCreditNoteModel;
+        }
+
+        public SapCreditNoteModel MapToSapCreditNote(CancelCreditNoteRequest cancelCreditNoteRequest)
+        {
+            var sapCreditNoteModel = new SapCreditNoteModel
+            {
+                U_DPL_CN_ID = cancelCreditNoteRequest.CreditNoteId,
+                BillingSystemId = cancelCreditNoteRequest.BillingSystemId
+            };
 
             return sapCreditNoteModel;
         }

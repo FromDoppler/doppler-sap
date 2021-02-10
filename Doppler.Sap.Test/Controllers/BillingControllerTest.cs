@@ -171,5 +171,113 @@ namespace Doppler.Sap.Test.Controllers
             // Assert
             Assert.Equal("Value can not be null (Parameter 'ClientId')", ex.Result.Message);
         }
+
+        [Fact]
+        public async Task UpdateCreditNotePaymentStatus_ShouldBeHttpStatusCodeOk_WhenRequestIsValid()
+        {
+            var updateCreditNotePaymentStatusRequest = new UpdateCreditNotePaymentStatusRequest { BillingSystemId = 2, Type = 2, CreditNoteId = 1 };
+
+            var loggerMock = new Mock<ILogger<BillingController>>();
+            var billingServiceMock = new Mock<IBillingService>();
+            billingServiceMock.Setup(x => x.UpdateCreditNotePaymentStatus(updateCreditNotePaymentStatusRequest)).Returns(Task.CompletedTask);
+
+            var controller = new BillingController(loggerMock.Object, billingServiceMock.Object);
+
+            // Act
+            var response = await controller.UpdateCreditNotePaymentStatus(updateCreditNotePaymentStatusRequest);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(response);
+            Assert.Equal("Successfully", ((ObjectResult)response).Value);
+        }
+
+        [Fact]
+        public void UpdateCreditNotePaymentStatus_ShouldBeThrowsAnException_WhenCreditNoteIdIsNotValid()
+        {
+            var updateCreditNotePaymentStatusRequest = new UpdateCreditNotePaymentStatusRequest { BillingSystemId = 2, Type = 2, CreditNoteId = 0 };
+            var loggerMock = new Mock<ILogger<BillingController>>();
+            var billingServiceMock = new Mock<IBillingService>();
+            billingServiceMock.Setup(x => x.UpdateCreditNotePaymentStatus(updateCreditNotePaymentStatusRequest)).ThrowsAsync(new ArgumentException("Value can not be null", "CreditNoteId"));
+
+            var controller = new BillingController(loggerMock.Object, billingServiceMock.Object);
+
+            // Act
+            var ex = Assert.ThrowsAsync<ArgumentException>(() => controller.UpdateCreditNotePaymentStatus(updateCreditNotePaymentStatusRequest));
+
+            // Assert
+            Assert.Equal("Value can not be null (Parameter 'CreditNoteId')", ex.Result.Message);
+        }
+
+        [Fact]
+        public void UpdateCreditNotePaymentStatus_ShouldBeThrowsAnException_WhenBillingSystemIdIsNotValid()
+        {
+            var updateCreditNotePaymentStatusRequest = new UpdateCreditNotePaymentStatusRequest { BillingSystemId = 0, Type = 2, CreditNoteId = 1 };
+            var loggerMock = new Mock<ILogger<BillingController>>();
+            var billingServiceMock = new Mock<IBillingService>();
+            billingServiceMock.Setup(x => x.UpdateCreditNotePaymentStatus(updateCreditNotePaymentStatusRequest)).ThrowsAsync(new ArgumentException("Value can not be null", "BillingSystemId"));
+
+            var controller = new BillingController(loggerMock.Object, billingServiceMock.Object);
+
+            // Act
+            var ex = Assert.ThrowsAsync<ArgumentException>(() => controller.UpdateCreditNotePaymentStatus(updateCreditNotePaymentStatusRequest));
+
+            // Assert
+            Assert.Equal("Value can not be null (Parameter 'BillingSystemId')", ex.Result.Message);
+        }
+
+        [Fact]
+        public async Task CancelCreditNote_ShouldBeHttpStatusCodeOk_WhenRequestIsValid()
+        {
+            var cancelCreditNoteRequest = new CancelCreditNoteRequest { BillingSystemId = 2, CreditNoteId = 1 };
+
+            var loggerMock = new Mock<ILogger<BillingController>>();
+            var billingServiceMock = new Mock<IBillingService>();
+            billingServiceMock.Setup(x => x.CancelCreditNote(cancelCreditNoteRequest)).Returns(Task.CompletedTask);
+
+            var controller = new BillingController(loggerMock.Object, billingServiceMock.Object);
+
+            // Act
+            var response = await controller.CancelCreditNote(cancelCreditNoteRequest);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(response);
+            Assert.Equal("Successfully", ((ObjectResult)response).Value);
+        }
+
+        [Fact]
+        public void CancelCreditNote_ShouldBeHttpStatusCodeOk_WhenRequestIsValid_ShouldBeThrowsAnException_WhenCreditNoteIdIsNotValid()
+        {
+            var cancelCreditNoteRequest = new CancelCreditNoteRequest { BillingSystemId = 2, CreditNoteId = 0 };
+
+            var loggerMock = new Mock<ILogger<BillingController>>();
+            var billingServiceMock = new Mock<IBillingService>();
+            billingServiceMock.Setup(x => x.CancelCreditNote(cancelCreditNoteRequest)).ThrowsAsync(new ArgumentException("Value can not be null", "CreditNoteId"));
+
+            var controller = new BillingController(loggerMock.Object, billingServiceMock.Object);
+
+            // Act
+            var ex = Assert.ThrowsAsync<ArgumentException>(() => controller.CancelCreditNote(cancelCreditNoteRequest));
+
+            // Assert
+            Assert.Equal("Value can not be null (Parameter 'CreditNoteId')", ex.Result.Message);
+        }
+
+        [Fact]
+        public void CancelCreditNote_ShouldBeHttpStatusCodeOk_WhenRequestIsValid_ShouldBeThrowsAnException_WhenBillingSystemIdIsNotValid()
+        {
+            var cancelCreditNoteRequest = new CancelCreditNoteRequest { BillingSystemId = 0, CreditNoteId = 1 };
+
+            var loggerMock = new Mock<ILogger<BillingController>>();
+            var billingServiceMock = new Mock<IBillingService>();
+            billingServiceMock.Setup(x => x.CancelCreditNote(cancelCreditNoteRequest)).ThrowsAsync(new ArgumentException("Value can not be null", "BillingSystemId"));
+
+            var controller = new BillingController(loggerMock.Object, billingServiceMock.Object);
+
+            // Act
+            var ex = Assert.ThrowsAsync<ArgumentException>(() => controller.CancelCreditNote(cancelCreditNoteRequest));
+
+            // Assert
+            Assert.Equal("Value can not be null (Parameter 'BillingSystemId')", ex.Result.Message);
+        }
     }
 }

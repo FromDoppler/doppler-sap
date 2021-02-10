@@ -1,11 +1,8 @@
 namespace Doppler.Sap.Models
 {
-    public class CreditNoteRequest
+    public class UpdateCreditNotePaymentStatusRequest
     {
-        public int InvoiceId { get; set; }
         public int CreditNoteId { get; set; }
-        public double Amount { get; set; }
-        public int ClientId { get; set; }
         public int BillingSystemId { get; set; }
         public int Type { get; set; }
         public string CardErrorCode { get; set; }

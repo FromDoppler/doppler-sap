@@ -13,8 +13,8 @@ namespace Doppler.Sap.Models
         public string CostingCode3 { get; set; }
         public string CostingCode4 { get; set; }
         public int? DiscountPercent { get; set; }
-        public int BaseType { get; set; }
-        public int BaseEntry { get; set; }
+        public int? BaseType { get; set; }
+        public int? BaseEntry { get; set; }
         public int? BaseLine { get; set; }
     }
 }

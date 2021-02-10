@@ -62,5 +62,25 @@ namespace Doppler.Sap.Controllers
 
             return new OkObjectResult("Successfully");
         }
+
+        [HttpPost("UpdateCreditNotePaymentStatus")]
+        public async Task<IActionResult> UpdateCreditNotePaymentStatus([FromBody] UpdateCreditNotePaymentStatusRequest updatePaymentStatusRequest)
+        {
+            _logger.LogDebug("Updating Credit Note Payment Status request.");
+
+            await _billingService.UpdateCreditNotePaymentStatus(updatePaymentStatusRequest);
+
+            return new OkObjectResult("Successfully");
+        }
+
+        [HttpPost("CancelCreditNote")]
+        public async Task<IActionResult> CancelCreditNote([FromBody] CancelCreditNoteRequest cancelCreditNoteRequest)
+        {
+            _logger.LogDebug("Canceling Credit Note.");
+
+            await _billingService.CancelCreditNote(cancelCreditNoteRequest);
+
+            return new OkObjectResult("Successfully");
+        }
     }
 }

@@ -6,6 +6,8 @@ namespace Doppler.Sap.Enums
         BillingRequest = 2,
         CurrencyRate = 3,
         UpdateBilling = 4,
-        CreateCreditNote = 5
+        CreateCreditNote = 5,
+        UpdateCreditNote = 6,
+        CancelCreditNote = 7
     }
 }

@@ -157,6 +157,53 @@ namespace Doppler.Sap.Services
             }
         }
 
+        public async Task UpdateCreditNotePaymentStatus(UpdateCreditNotePaymentStatusRequest updateCreditNotePaymentStatusRequest)
+        {
+            try
+            {
+                var sapSystem = SapSystemHelper.GetSapSystemByBillingSystem(updateCreditNotePaymentStatusRequest.BillingSystemId);
+                var validator = GetValidator(sapSystem);
+                validator.ValidateUpdateCreditNotePaymentStatusRequest(updateCreditNotePaymentStatusRequest);
+                var creditNoteRequest = GetMapper(sapSystem).MapUpdateCreditNotePaymentStatusRequestToCreditNoteRequest(updateCreditNotePaymentStatusRequest);
+
+                _queuingService.AddToTaskQueue(
+                    new SapTask
+                    {
+                        CreditNoteRequest = creditNoteRequest,
+                        TaskType = SapTaskEnum.UpdateCreditNote
+                    }
+                );
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed at update credit note request for invoice: {updateCreditNotePaymentStatusRequest.CreditNoteId}.", e);
+                await _slackService.SendNotification($"Failed at update credit note request for invoice: {updateCreditNotePaymentStatusRequest.CreditNoteId}. Error: {e.Message}");
+            }
+        }
+
+        public async Task CancelCreditNote(CancelCreditNoteRequest cancelCreditNoteRequest)
+        {
+            try
+            {
+                var sapSystem = SapSystemHelper.GetSapSystemByBillingSystem(cancelCreditNoteRequest.BillingSystemId);
+                var validator = GetValidator(sapSystem);
+                validator.ValidateCancelCreditNote(cancelCreditNoteRequest);
+
+                _queuingService.AddToTaskQueue(
+                    new SapTask
+                    {
+                        CancelCreditNoteRequest = cancelCreditNoteRequest,
+                        TaskType = SapTaskEnum.CancelCreditNote
+                    }
+                );
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed at update credit note request for invoice: {cancelCreditNoteRequest.CreditNoteId}.", e);
+                await _slackService.SendNotification($"Failed at update credit note request for invoice: {cancelCreditNoteRequest.CreditNoteId}. Error: {e.Message}");
+            }
+        }
+
         private IBillingMapper GetMapper(string sapSystem)
         {
             // Check if exists business partner mapper for the sapSystem

@@ -8,5 +8,6 @@ namespace Doppler.Sap.Models
 
         public string IncomingPaymentsEndpoint { get; set; }
         public string CreditNotesEndpoint { get; set; }
+        public string OutgoingPaymentEndpoint { get; set; }
     }
 }
