@@ -27,6 +27,10 @@ namespace Doppler.Sap.Factory
                     return await ((CreateOrUpdateBusinessPartnerHandler)_serviceProvider.GetService(typeof(CreateOrUpdateBusinessPartnerHandler))).Handle(sapTask);
                 case SapTaskEnum.CreateCreditNote:
                     return await ((CreditNoteHandler)_serviceProvider.GetService(typeof(CreditNoteHandler))).Handle(sapTask);
+                case SapTaskEnum.UpdateCreditNote:
+                    return await ((CreditNoteHandler)_serviceProvider.GetService(typeof(CreditNoteHandler))).UpdatePaymentStatusHandle(sapTask);
+                case SapTaskEnum.CancelCreditNote:
+                    return await ((CreditNoteHandler)_serviceProvider.GetService(typeof(CreditNoteHandler))).CancelCreditNoteHandle(sapTask);
                 default:
                     throw new ArgumentOutOfRangeException();
             }

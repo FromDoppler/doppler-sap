@@ -11,5 +11,7 @@ namespace Doppler.Sap.Services
 
         Task UpdatePaymentStatus(UpdatePaymentStatusRequest updateBillingRequest);
         Task CreateCreditNote(CreditNoteRequest creditNotesRequest);
+        Task UpdateCreditNotePaymentStatus(UpdateCreditNotePaymentStatusRequest updatePaymentStatusRequest);
+        Task CancelCreditNote(CancelCreditNoteRequest cancelCreditNoteRequest);
     }
 }

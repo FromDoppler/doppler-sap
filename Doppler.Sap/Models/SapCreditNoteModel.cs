@@ -4,7 +4,7 @@ namespace Doppler.Sap.Models
 {
     public class SapCreditNoteModel
     {
-        public int InvoiceId { get; set; }
+        public int CreditNoteId { get; set; }
         public string CardCode { get; set; }
         public string DocDate { get; set; }
         public string DocDueDate { get; set; }
@@ -22,6 +22,8 @@ namespace Doppler.Sap.Models
         public string U_DPL_CARD_TYPE { get; set; }
         public string U_DPL_CARD_ERROR_COD { get; set; }
         public string U_DPL_CARD_ERROR_DET { get; set; }
-        public int U_DPL_INV_ID { get; set; }
+        public int U_DPL_CN_ID { get; set; }
+        public bool TransactionApproved { get; set; }
+        public string TransferReference { get; set; }
     }
 }
