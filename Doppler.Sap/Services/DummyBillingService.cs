@@ -35,5 +35,10 @@ namespace Doppler.Sap.Services
         {
             return Task.CompletedTask;
         }
+
+        public Task<InvoiceResponse> GetInvoiceByDopplerInvoiceId(int billingSystemId, int dopplerInvoiceId)
+        {
+            return Task.FromResult(new InvoiceResponse());
+        }
     }
 }

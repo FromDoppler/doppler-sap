@@ -15,5 +15,6 @@ namespace Doppler.Sap.Mappers.Billing
         CreditNoteRequest MapUpdateCreditNotePaymentStatusRequestToCreditNoteRequest(UpdateCreditNotePaymentStatusRequest updateCreditNotePaymentStatusRequest);
         SapCreditNoteModel MapToSapCreditNote(CreditNoteRequest creditNoteRequest);
         SapCreditNoteModel MapToSapCreditNote(CancelCreditNoteRequest cancelCreditNoteRequest);
+        InvoiceResponse MapToInvoice(SapSaleOrderInvoiceResponse sapSaleOrderInvoiceResponse);
     }
 }

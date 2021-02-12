@@ -1,4 +1,5 @@
 using Doppler.Sap.Enums;
+using Doppler.Sap.Factory;
 using Doppler.Sap.Mappers;
 using Doppler.Sap.Mappers.Billing;
 using Doppler.Sap.Models;
@@ -20,6 +21,7 @@ namespace Doppler.Sap.Services
         private readonly ISlackService _slackService;
         private readonly IEnumerable<IBillingMapper> _billingMappers;
         private readonly IEnumerable<IBillingValidation> _billingValidations;
+        private readonly ISapServiceSettingsFactory _sapServiceSettingsFactory;
 
         public BillingService(
             IQueuingService queuingService,
@@ -27,7 +29,8 @@ namespace Doppler.Sap.Services
             ILogger<BillingService> logger,
             ISlackService slackService,
             IEnumerable<IBillingMapper> billingMappers,
-            IEnumerable<IBillingValidation> billingValidations)
+            IEnumerable<IBillingValidation> billingValidations,
+            ISapServiceSettingsFactory sapServiceSettingsFactory)
         {
             _queuingService = queuingService;
             _dateTimeProvider = dateTimeProvider;
@@ -35,6 +38,7 @@ namespace Doppler.Sap.Services
             _slackService = slackService;
             _billingMappers = billingMappers;
             _billingValidations = billingValidations;
+            _sapServiceSettingsFactory = sapServiceSettingsFactory;
         }
 
         public Task SendCurrencyToSap(List<CurrencyRateDto> currencyRate)
@@ -203,6 +207,14 @@ namespace Doppler.Sap.Services
                 await _slackService.SendNotification($"Failed at update credit note request for invoice: {cancelCreditNoteRequest.CreditNoteId}. Error: {e.Message}");
             }
         }
+
+        public async Task<InvoiceResponse> GetInvoiceByDopplerInvoiceId(int billingSystemId, int dopplerInvoiceId)
+        {
+            var sapSystem = SapSystemHelper.GetSapSystemByBillingSystem(billingSystemId);
+            var response = await _sapServiceSettingsFactory.CreateHandler(sapSystem).TryGetInvoiceByInvoiceId(dopplerInvoiceId);
+            return (response != null) ? GetMapper(sapSystem).MapToInvoice(response) : null;
+        }
+
 
         private IBillingMapper GetMapper(string sapSystem)
         {

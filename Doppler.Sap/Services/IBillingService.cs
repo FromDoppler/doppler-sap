@@ -13,5 +13,6 @@ namespace Doppler.Sap.Services
         Task CreateCreditNote(CreditNoteRequest creditNotesRequest);
         Task UpdateCreditNotePaymentStatus(UpdateCreditNotePaymentStatusRequest updatePaymentStatusRequest);
         Task CancelCreditNote(CancelCreditNoteRequest cancelCreditNoteRequest);
+        Task<InvoiceResponse> GetInvoiceByDopplerInvoiceId(int billingSystemId, int dopplerInvoiceId);
     }
 }

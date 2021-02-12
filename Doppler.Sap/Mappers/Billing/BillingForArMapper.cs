@@ -230,5 +230,22 @@ namespace Doppler.Sap.Mappers.Billing
 
             return sapCreditNoteModel;
         }
+
+        public InvoiceResponse MapToInvoice(SapSaleOrderInvoiceResponse sapSaleOrderInvoiceResponse)
+        {
+            return new InvoiceResponse
+            {
+                BillingSystemId = sapSaleOrderInvoiceResponse.BillingSystemId,
+                CardCode = sapSaleOrderInvoiceResponse.CardCode,
+                CardHolder = sapSaleOrderInvoiceResponse.U_DPL_CARD_HOLDER,
+                CardNumber = sapSaleOrderInvoiceResponse.U_DPL_CARD_NUMBER,
+                CardType = sapSaleOrderInvoiceResponse.U_DPL_CARD_TYPE,
+                DocDate = sapSaleOrderInvoiceResponse.DocDate,
+                DocEntry = sapSaleOrderInvoiceResponse.DocEntry,
+                DocNum = sapSaleOrderInvoiceResponse.DocNum,
+                DocTotal = sapSaleOrderInvoiceResponse.DocTotal,
+                InvoiceId = sapSaleOrderInvoiceResponse.U_DPL_INV_ID
+            };
+        }
     }
 }
