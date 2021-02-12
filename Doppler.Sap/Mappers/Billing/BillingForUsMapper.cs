@@ -92,7 +92,7 @@ namespace Doppler.Sap.Mappers.Billing
                     Amount = $"{_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}",
                     Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} Plan " : null,
                     Discount = billingRequest.Discount > 0 ? $"{billingRequest.Discount}% OFF" : null,
-                    Payment = $"Period {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}",
+                    Payment = billingRequest.Periodicity != null ? $"Period {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
                 };
 
                 planItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
