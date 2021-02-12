@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Doppler.Sap.Factory;
 using Doppler.Sap.Mappers.Billing;
 using Doppler.Sap.Models;
 using Doppler.Sap.Services;
@@ -38,7 +39,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 Mock.Of<ISlackService>(),
                 billingMappers,
-                null);
+                null,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var currencyList = new List<CurrencyRateDto>();
 
@@ -70,7 +72,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 Mock.Of<ISlackService>(),
                 billingMappers,
-                null);
+                null,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var currencyList = new List<CurrencyRateDto>
             {
@@ -111,7 +114,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 Mock.Of<ISlackService>(),
                 billingMappers,
-                null);
+                null,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var currencyList = new List<CurrencyRateDto>
             {
@@ -173,7 +177,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 Mock.Of<ISlackService>(),
                 billingMappers,
-                billingValidations);
+                billingValidations,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var billingRequestList = new List<BillingRequest>
             {
@@ -217,7 +222,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                null);
+                null,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var billingRequestList = new List<BillingRequest>
             {
@@ -261,7 +267,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                null);
+                null,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var billingRequestList = new List<BillingRequest>
             {
@@ -321,7 +328,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 Mock.Of<ISlackService>(),
                 billingMappers,
-                billingValidations);
+                billingValidations,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var updateBillingRequestList = new UpdatePaymentStatusRequest
             {
@@ -361,7 +369,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                null);
+                null,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var updateBillingRequestList = new UpdatePaymentStatusRequest
             {
@@ -401,7 +410,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 Mock.Of<ISlackService>(),
                 billingMappers,
-                billingValidations);
+                billingValidations,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var creditNote = new CreditNoteRequest { Amount = 100, BillingSystemId = 2, ClientId = 1, InvoiceId = 1, Type = 1 };
 
@@ -434,7 +444,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                null);
+                null,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var creditNote = new CreditNoteRequest { Amount = 100, BillingSystemId = 2, ClientId = 1, InvoiceId = 0, Type = 1 };
 
@@ -468,7 +479,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                null);
+                null,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var creditNote = new CreditNoteRequest { Amount = 100, BillingSystemId = 0, ClientId = 1, InvoiceId = 1, Type = 1 };
 
@@ -502,7 +514,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                null);
+                null,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var creditNote = new CreditNoteRequest { Amount = 100, BillingSystemId = 2, ClientId = 0, InvoiceId = 1, Type = 1 };
 
@@ -539,7 +552,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 Mock.Of<ISlackService>(),
                 billingMappers,
-                billingValidations);
+                billingValidations,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var updateCreditNotePaymentStatusRequest = new UpdateCreditNotePaymentStatusRequest { BillingSystemId = 2, Type = 2, CreditNoteId = 1 };
 
@@ -572,7 +586,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                null);
+                null,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var updateCreditNotePaymentStatusRequest = new UpdateCreditNotePaymentStatusRequest { BillingSystemId = 2, Type = 2, CreditNoteId = 0 };
 
@@ -606,7 +621,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                null);
+                null,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var updateCreditNotePaymentStatusRequest = new UpdateCreditNotePaymentStatusRequest { BillingSystemId = 0, Type = 2, CreditNoteId = 1 };
 
@@ -643,7 +659,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                billingValidations);
+                billingValidations,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var billingRequestList = new List<BillingRequest>
             {
@@ -691,7 +708,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                billingValidations);
+                billingValidations,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var billingRequestList = new List<BillingRequest>
             {
@@ -741,7 +759,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                billingValidations);
+                billingValidations,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var billingRequestList = new List<BillingRequest>
             {
@@ -796,7 +815,8 @@ namespace Doppler.Sap.Test
                 Mock.Of<ILogger<BillingService>>(),
                 slackServiceMock.Object,
                 billingMappers,
-                billingValidations);
+                billingValidations,
+                Mock.Of<ISapServiceSettingsFactory>());
 
             var billingRequestList = new List<BillingRequest>
             {
@@ -818,6 +838,90 @@ namespace Doppler.Sap.Test
                     It.Is<SapTask>(y => y.BillingRequest.DocumentLines.FirstOrDefault()
                         .FreeText == "$ 15 -  Monthly Plan  - Period 00 0")),
                 Times.Once);
+        }
+
+        [Fact]
+        public async Task BillingService_ShouldBeReturnInvoice_WhenTheRequestIsValid()
+        {
+            var invoiceId = 1;
+            var billingSystemId = 2;
+
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForArMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations),
+                new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations)
+            };
+
+            var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(invoiceId))
+                .ReturnsAsync(new SapSaleOrderInvoiceResponse
+                {
+                    BillingSystemId = billingSystemId,
+                    CardCode = "CD001",
+                    DocEntry = 1
+                });
+
+            var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
+            sapServiceSettingsFactoryMock.Setup(x => x.CreateHandler("US")).Returns(sapTaskHandlerMock.Object);
+
+            var billingService = new BillingService(Mock.Of<IQueuingService>(),
+                Mock.Of<IDateTimeProvider>(),
+                Mock.Of<ILogger<BillingService>>(),
+                Mock.Of<ISlackService>(),
+                billingMappers,
+                null,
+                sapServiceSettingsFactoryMock.Object);
+
+            var response = await billingService.GetInvoiceByDopplerInvoiceId(billingSystemId, invoiceId);
+
+            Assert.NotNull(response);
+            Assert.Equal(billingSystemId, response.BillingSystemId);
+            Assert.Equal("CD001", response.CardCode);
+            Assert.Equal(1, response.DocEntry);
+            sapTaskHandlerMock.Verify(x => x.TryGetInvoiceByInvoiceId(invoiceId), Times.Once);
+        }
+
+        [Fact]
+        public async Task BillingService_ShouldBeReturnNull_WhenInvoiceNotExistInSap()
+        {
+            var invoiceId = 1;
+            var billingSystemId = 2;
+
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForArMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations),
+                new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), Mock.Of<IDateTimeProvider>(), timeZoneConfigurations)
+            };
+
+            var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(invoiceId))
+                .ReturnsAsync((SapSaleOrderInvoiceResponse)null);
+
+            var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
+            sapServiceSettingsFactoryMock.Setup(x => x.CreateHandler("US")).Returns(sapTaskHandlerMock.Object);
+
+            var billingService = new BillingService(Mock.Of<IQueuingService>(),
+                Mock.Of<IDateTimeProvider>(),
+                Mock.Of<ILogger<BillingService>>(),
+                Mock.Of<ISlackService>(),
+                billingMappers,
+                null,
+                sapServiceSettingsFactoryMock.Object);
+
+            var response = await billingService.GetInvoiceByDopplerInvoiceId(billingSystemId, invoiceId);
+
+            Assert.Null(response);
+            sapTaskHandlerMock.Verify(x => x.TryGetInvoiceByInvoiceId(invoiceId), Times.Once);
         }
     }
 }

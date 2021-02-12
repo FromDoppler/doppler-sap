@@ -82,5 +82,11 @@ namespace Doppler.Sap.Controllers
 
             return new OkObjectResult("Successfully");
         }
+
+        [HttpGet("{billingSystemId}/Invoices/{dopplerInvoiceId}")]
+        public async Task<InvoiceResponse> GetInvoiveByDopplerInvoiceId([FromRoute] int billingSystemId, [FromRoute] int dopplerInvoiceId)
+        {
+            return await _billingService.GetInvoiceByDopplerInvoiceId(billingSystemId, dopplerInvoiceId);
+        }
     }
 }
