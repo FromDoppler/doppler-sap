@@ -140,11 +140,11 @@ namespace Doppler.Sap.Mappers.Billing
             return sapSaleOrder;
         }
 
-        public SapIncomingPaymentModel MapSapIncomingPayment(int docEntry, string cardCode, decimal docTotal, DateTime docDate, string transferReference)
+        public SapIncomingPaymentModel MapSapIncomingPayment(int docEntry, string cardCode, decimal docTotal, string transferReference)
         {
             var newIncomingPayment = new SapIncomingPaymentModel
             {
-                DocDate = docDate.ToString("yyyy-MM-dd"),
+                DocDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
                 TransferDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
                 TaxDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
                 CardCode = cardCode,

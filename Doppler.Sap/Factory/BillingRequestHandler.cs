@@ -79,7 +79,7 @@ namespace Doppler.Sap.Factory
         private async Task<SapTaskResult> SendIncomingPaymentToSap(SapServiceConfig serviceSetting, string sapSystem, SapSaleOrderInvoiceResponse response, string transferReference)
         {
             var billingMapper = GetMapper(sapSystem);
-            var incomingPaymentRequest = billingMapper.MapSapIncomingPayment(response.DocEntry, response.CardCode, response.DocTotal, response.DocDate, transferReference);
+            var incomingPaymentRequest = billingMapper.MapSapIncomingPayment(response.DocEntry, response.CardCode, response.DocTotal, transferReference);
 
             var message = new HttpRequestMessage
             {
