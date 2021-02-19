@@ -98,7 +98,7 @@ namespace Doppler.Sap.Factory
 
             if (!sapResponse.IsSuccessStatusCode)
             {
-                _logger.LogError($"Incoming Payment could'n create to SAP because exists an error: '{sapResponse.Content.ReadAsStringAsync()}'.");
+                _logger.LogError($"Incoming Payment could'n create to SAP because exists an error: '{await sapResponse.Content.ReadAsStringAsync()}'.");
             }
 
             return new SapTaskResult
