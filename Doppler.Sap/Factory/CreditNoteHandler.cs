@@ -112,7 +112,7 @@ namespace Doppler.Sap.Factory
 
                 if (dequeuedTask.CreditNoteRequest.Type != (int)CreditNoteEnum.Refund || !dequeuedTask.CreditNoteRequest.TransactionApproved)
                 {
-                    _logger.LogError("The outgoing payment couldn't create in SAP because the type of the credit note  must be 'Refund' and the transaction approved..");
+                    _logger.LogError("The outgoing payment couldn't create in SAP because the type of the credit note  must be 'Refund' and the transaction approved: '{SapResponseContent}'", sapResponse.SapResponseContent);
                     return sapResponse;
                 }
 
