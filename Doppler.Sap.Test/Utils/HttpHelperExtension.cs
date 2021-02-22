@@ -9,10 +9,10 @@ namespace Doppler.Sap.Test.Utils
 {
     public static class HttpHelperExtension
     {
-        public static IHttpClientFactory GetHttpClientMock(string content, HttpStatusCode statusCode, Mock<HttpMessageHandler> httpHandlerMock = null)
+        public static IHttpClientFactory GetHttpClientMock(string content, HttpStatusCode statusCode, Mock<HttpMessageHandler> httpHandlerMock)
         {
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            var httpMessageHandlerMock = httpHandlerMock ?? new Mock<HttpMessageHandler>();
+            var httpMessageHandlerMock = httpHandlerMock;
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())

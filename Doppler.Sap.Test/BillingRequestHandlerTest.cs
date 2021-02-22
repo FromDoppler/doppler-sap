@@ -71,7 +71,7 @@ namespace Doppler.Sap.Test
                 });
 
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-            var httpClientFactoryMock = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
+            var httpClientFactory = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.StartSession())
@@ -98,7 +98,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock,
+                httpClientFactory,
                 billingValidations,
                 billingMappers);
 
@@ -144,7 +144,7 @@ namespace Doppler.Sap.Test
             };
 
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-            var httpClientFactoryMock = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
+            var httpClientFactory = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.TryGetBusinessPartner(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
@@ -160,7 +160,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock,
+                httpClientFactory,
                 billingValidations,
                 billingMappers);
 
@@ -202,7 +202,7 @@ namespace Doppler.Sap.Test
             };
 
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-            var httpClientFactoryMock = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
+            var httpClientFactory = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.TryGetBusinessPartner(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
@@ -222,7 +222,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock,
+                httpClientFactory,
                 billingValidations,
                 billingMappers);
 
@@ -248,7 +248,7 @@ namespace Doppler.Sap.Test
             };
 
             var sapConfigMock = new Mock<IOptions<SapConfig>>();
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            var httpClientFactory = new Mock<IHttpClientFactory>();
             var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
 
             sapServiceSettingsFactoryMock
@@ -259,7 +259,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock.Object,
+                httpClientFactory.Object,
                 It.IsAny<IEnumerable<IBillingValidation>>(),
                 It.IsAny<IEnumerable<IBillingMapper>>());
 
@@ -293,7 +293,7 @@ namespace Doppler.Sap.Test
                 new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations)
             };
 
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            var httpClientFactory = new Mock<IHttpClientFactory>();
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
                 .ReturnsAsync((SapSaleOrderInvoiceResponse)null);
@@ -305,7 +305,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock.Object,
+                httpClientFactory.Object,
                 billingValidations,
                 billingMappers);
 
@@ -371,7 +371,7 @@ namespace Doppler.Sap.Test
             };
 
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-            var httpClientFactoryMock = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
+            var httpClientFactory = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
@@ -391,7 +391,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock,
+                httpClientFactory,
                 billingValidations,
                 billingMappers);
 
@@ -464,7 +464,7 @@ namespace Doppler.Sap.Test
             };
 
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-            var httpClientFactoryMock = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
+            var httpClientFactory = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
@@ -484,7 +484,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock,
+                httpClientFactory,
                 billingValidations,
                 billingMappers);
 
@@ -603,9 +603,7 @@ namespace Doppler.Sap.Test
             var uriForIncomingPayment = sapConfig.SapServiceConfigsBySystem["US"].BaseServerUrl + sapConfig.SapServiceConfigsBySystem["US"].BillingConfig.IncomingPaymentsEndpoint;
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
                 ItExpr.Is<HttpRequestMessage>(
-                    req => req.Method == HttpMethod.Post &&
-                         req.RequestUri == new Uri(uriForIncomingPayment) &&
-                         req.Content.ReadAsStringAsync().Result.Contains("\"DocDate\":\"2051-02-03\"")),
+                    req => req.Method == HttpMethod.Post && req.RequestUri == new Uri(uriForIncomingPayment) && req.Content.ReadAsStringAsync().Result.Contains("\"DocDate\":\"2051-02-03\"")),
                 ItExpr.IsAny<CancellationToken>());
         }
     }
