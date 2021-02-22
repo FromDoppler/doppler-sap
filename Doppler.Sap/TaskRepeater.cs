@@ -42,7 +42,7 @@ namespace Doppler.Sap
                         else
                         {
                             _logger.LogError(
-                                $"Failed at {sapServiceResponse.TaskName}, SAP response was {sapServiceResponse.SapResponseContent}");
+                                $"Failed at {sapServiceResponse.TaskName}, for Client Id {sapServiceResponse.IdUser}, SAP response was {sapServiceResponse.SapResponseContent}");
                         }
                     }
                     catch (Exception e)

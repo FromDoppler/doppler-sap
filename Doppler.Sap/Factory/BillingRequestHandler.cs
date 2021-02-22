@@ -71,7 +71,8 @@ namespace Doppler.Sap.Factory
                 {
                     IsSuccessful = false,
                     SapResponseContent = ex.Message,
-                    TaskName = "Creating Billing Request"
+                    TaskName = "Creating Billing Request",
+                    IdUser = dequeuedTask.BillingRequest.UserId.ToString()
                 };
             }
         }
@@ -198,8 +199,7 @@ namespace Doppler.Sap.Factory
                 Content = new StringContent(JsonConvert.SerializeObject(saleOrder,
                     new JsonSerializerSettings
                     {
-                        NullValueHandling = NullValueHandling.Ignore,
-                        DefaultValueHandling = DefaultValueHandling.Ignore
+                        NullValueHandling = NullValueHandling.Ignore
                     }),
                     Encoding.UTF8,
                     "application/json"),
