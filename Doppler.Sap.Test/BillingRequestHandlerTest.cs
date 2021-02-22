@@ -8,6 +8,7 @@ using Doppler.Sap.Factory;
 using Doppler.Sap.Mappers.Billing;
 using Doppler.Sap.Models;
 using Doppler.Sap.Services;
+using Doppler.Sap.Test.Utils;
 using Doppler.Sap.Utils;
 using Doppler.Sap.Validations.Billing;
 using Microsoft.Extensions.Logging;
@@ -69,19 +70,8 @@ namespace Doppler.Sap.Test
                     }
                 });
 
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(@"")
-                });
-            var httpClient = new HttpClient(httpMessageHandlerMock.Object);
-
-            httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>()))
-                .Returns(httpClient);
+            var httpClientFactory = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.StartSession())
@@ -108,19 +98,9 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock.Object,
+                httpClientFactory,
                 billingValidations,
                 billingMappers);
-
-            var httpResponseMessage = new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("")
-            };
-            httpResponseMessage.Headers.Add("Set-Cookie", "");
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(httpResponseMessage);
 
             var result = await handler.Handle(new SapTask
             {
@@ -163,19 +143,8 @@ namespace Doppler.Sap.Test
                 new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations)
             };
 
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(@"")
-                });
-            var httpClient = new HttpClient(httpMessageHandlerMock.Object);
-
-            httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>()))
-                .Returns(httpClient);
+            var httpClientFactory = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.TryGetBusinessPartner(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
@@ -191,7 +160,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock.Object,
+                httpClientFactory,
                 billingValidations,
                 billingMappers);
 
@@ -232,19 +201,8 @@ namespace Doppler.Sap.Test
                 new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations)
             };
 
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(@"")
-                });
-            var httpClient = new HttpClient(httpMessageHandlerMock.Object);
-
-            httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>()))
-                .Returns(httpClient);
+            var httpClientFactory = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.TryGetBusinessPartner(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
@@ -264,7 +222,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock.Object,
+                httpClientFactory,
                 billingValidations,
                 billingMappers);
 
@@ -290,7 +248,7 @@ namespace Doppler.Sap.Test
             };
 
             var sapConfigMock = new Mock<IOptions<SapConfig>>();
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            var httpClientFactory = new Mock<IHttpClientFactory>();
             var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
 
             sapServiceSettingsFactoryMock
@@ -301,7 +259,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock.Object,
+                httpClientFactory.Object,
                 It.IsAny<IEnumerable<IBillingValidation>>(),
                 It.IsAny<IEnumerable<IBillingMapper>>());
 
@@ -335,8 +293,7 @@ namespace Doppler.Sap.Test
                 new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations)
             };
 
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            var httpClientFactory = new Mock<IHttpClientFactory>();
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
                 .ReturnsAsync((SapSaleOrderInvoiceResponse)null);
@@ -348,7 +305,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock.Object,
+                httpClientFactory.Object,
                 billingValidations,
                 billingMappers);
 
@@ -413,21 +370,8 @@ namespace Doppler.Sap.Test
                 new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations)
             };
 
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(@"")
-                });
-
-            var httpClient = new HttpClient(httpMessageHandlerMock.Object);
-
-            httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>()))
-                .Returns(httpClient);
+            var httpClientFactory = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
@@ -447,7 +391,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock.Object,
+                httpClientFactory,
                 billingValidations,
                 billingMappers);
 
@@ -516,23 +460,11 @@ namespace Doppler.Sap.Test
             {
                 new BillingForArMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations),
                 new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations)
+
             };
 
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(@"")
-                });
-
-            var httpClient = new HttpClient(httpMessageHandlerMock.Object);
-
-            httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>()))
-                .Returns(httpClient);
+            var httpClientFactory = HttpHelperExtension.GetHttpClientMock(string.Empty, HttpStatusCode.OK, httpMessageHandlerMock);
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
             sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
@@ -552,7 +484,7 @@ namespace Doppler.Sap.Test
                 sapConfigMock.Object,
                 Mock.Of<ILogger<BillingRequestHandler>>(),
                 sapServiceSettingsFactoryMock.Object,
-                httpClientFactoryMock.Object,
+                httpClientFactory,
                 billingValidations,
                 billingMappers);
 
@@ -571,6 +503,108 @@ namespace Doppler.Sap.Test
             sapTaskHandlerMock.Verify(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()), Times.Once);
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(), ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Patch), ItExpr.IsAny<CancellationToken>());
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(), ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri == new Uri(uriForIncomingPayment)), ItExpr.IsAny<CancellationToken>());
+        }
+
+        [Fact]
+        public async Task BillingRequestHandler_ShouldSendDateOfPaymentNow_WhenPaymentProcessIsExecuted()
+        {
+            var sapTask = new SapTask
+            {
+                BillingRequest = new SapSaleOrderModel
+                {
+                    InvoiceId = 1,
+                    TransactionApproved = true,
+                    BillingSystemId = 2
+                },
+                TaskType = Enums.SapTaskEnum.BillingRequest
+            };
+
+            var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
+            sapTaskHandlerMock.Setup(x => x.TryGetBusinessPartner(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+                .ReturnsAsync(new SapBusinessPartner
+                {
+                    FederalTaxID = string.Empty,
+                    CardCode = "2323423"
+                });
+
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+                .ReturnsAsync((SapSaleOrderInvoiceResponse)null);
+
+            sapTaskHandlerMock.Setup(x => x.StartSession())
+                .ReturnsAsync(new SapLoginCookies
+                {
+                    B1Session = "session",
+                    RouteId = "route"
+                });
+
+            var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
+            sapServiceSettingsFactoryMock.Setup(x => x.CreateHandler(It.IsAny<string>()))
+                .Returns(sapTaskHandlerMock.Object);
+
+            var billingValidations = new List<IBillingValidation>
+            {
+                new BillingForUsValidation(Mock.Of<ILogger<BillingForUsValidation>>())
+            };
+
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+            dateTimeProviderMock.Setup(x => x.GetDateByTimezoneId(It.IsAny<DateTime>(), It.IsAny<string>()))
+                .Returns(new DateTime(2051, 2, 3));
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations)
+            };
+
+            var sapConfig = new SapConfig
+            {
+                SapServiceConfigsBySystem = new Dictionary<string, SapServiceConfig>
+                {
+                    {
+                        "US", new SapServiceConfig
+                        {
+                            CompanyDB = "CompanyDb",
+                            Password = "password",
+                            UserName = "Name",
+                            BaseServerUrl = "http://123.123.123/",
+                            BusinessPartnerConfig = new BusinessPartnerConfig
+                            {
+                                Endpoint = "BusinessPartners"
+                            },
+                            BillingConfig = new BillingConfig
+                            {
+                                Endpoint = "Orders",
+                                NeedCreateIncomingPayments = true
+                            }
+                        }
+                    }
+                }
+            };
+
+            var sapConfigMock = new Mock<IOptions<SapConfig>>();
+            sapConfigMock.Setup(x => x.Value)
+                .Returns(sapConfig);
+
+            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            var handler = new BillingRequestHandler(
+                sapConfigMock.Object,
+                Mock.Of<ILogger<BillingRequestHandler>>(),
+                sapServiceSettingsFactoryMock.Object,
+                HttpHelperExtension.GetHttpClientMock("{\"DocEntry\":3783,\"CardCode\":\"345\"}", HttpStatusCode.OK, httpMessageHandlerMock),
+                billingValidations,
+                billingMappers);
+
+            await handler.Handle(sapTask);
+
+            var uriForIncomingPayment = sapConfig.SapServiceConfigsBySystem["US"].BaseServerUrl + sapConfig.SapServiceConfigsBySystem["US"].BillingConfig.IncomingPaymentsEndpoint;
+            httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post && req.RequestUri == new Uri(uriForIncomingPayment) && req.Content.ReadAsStringAsync().Result.Contains("\"DocDate\":\"2051-02-03\"")),
+                ItExpr.IsAny<CancellationToken>());
         }
     }
 }
