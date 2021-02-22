@@ -5,5 +5,6 @@ namespace Doppler.Sap.Models
         public bool IsSuccessful { get; set; }
         public string SapResponseContent { get; set; }
         public string TaskName { get; set; }
+        public string IdUser { get; set; }
     }
 }
