@@ -180,7 +180,8 @@ namespace Doppler.Sap.Mappers.Billing
                     ItemCode = line.ItemCode,
                     Quantity = line.Quantity,
                     TaxCode = line.TaxCode,
-                    UnitPrice = amount
+                    UnitPrice = amount,
+                    ReturnReason = -1
                 };
 
                 sapCreditNoteModel.DocumentLines.Add(creditNoteLine);
