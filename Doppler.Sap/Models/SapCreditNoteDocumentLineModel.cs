@@ -16,5 +16,6 @@ namespace Doppler.Sap.Models
         public int? BaseType { get; set; }
         public int? BaseEntry { get; set; }
         public int? BaseLine { get; set; }
+        public int ReturnReason { get; set; }
     }
 }

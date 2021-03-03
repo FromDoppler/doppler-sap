@@ -34,6 +34,22 @@ namespace Doppler.Sap.Mappers.Billing
             {3, "12 months"}
         };
 
+        private readonly Dictionary<string, int> _creditNoteReason = new Dictionary<string, int>
+        {
+            {"Account cancellation", 1},
+            {"Bonus", 2},
+            {"Rebilling", 3},
+            {"Chargeback", 4},
+            {"Payment method change", 5},
+            {"First data refund", 6},
+            {"Doppler failure bonus", 7},
+            {"Plan change", 8},
+            {"Doppler failure refund", 10},
+            {"Duplicated invoice", 11},
+            { "Transfer refund", 13},
+            {"Credits purchase cancellation", 14},
+            {"Credit memo without refund - account cancellation", 15}
+        };
 
         public BillingForUsMapper(ISapBillingItemsService sapBillingItemsService, IDateTimeProvider dateTimeProvider, TimeZoneConfigurations timezoneConfig)
         {
@@ -258,7 +274,9 @@ namespace Doppler.Sap.Mappers.Billing
                     ItemCode = line.ItemCode,
                     Quantity = line.Quantity,
                     TaxCode = line.TaxCode,
-                    UnitPrice = amount
+                    UnitPrice = amount,
+                    ReturnReason = string.IsNullOrEmpty(creditNoteRequest.Reason) ? -1 :
+                    _creditNoteReason.TryGetValue(creditNoteRequest.Reason, out var outReason) ? outReason : -1
                 };
 
                 sapCreditNoteModel.DocumentLines.Add(creditNoteLine);

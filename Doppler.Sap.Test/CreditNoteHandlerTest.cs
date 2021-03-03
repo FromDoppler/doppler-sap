@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -8,11 +9,13 @@ using Doppler.Sap.Factory;
 using Doppler.Sap.Mappers.Billing;
 using Doppler.Sap.Models;
 using Doppler.Sap.Services;
+using Doppler.Sap.Test.Utils;
 using Doppler.Sap.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Doppler.Sap.Test
@@ -686,6 +689,442 @@ namespace Doppler.Sap.Test
             Assert.False(result.IsSuccessful);
             Assert.Equal($"Credit Note could'n cancel to SAP because the credit note does not exist: '{sapTask.CancelCreditNoteRequest.CreditNoteId}'.", result.SapResponseContent);
             Assert.Equal("Canceling Credit Note Request", result.TaskName);
+        }
+
+        [Fact]
+        public async Task CreditNoteHandler_US_ShouldBeSendCreditNoteInSap_WhenCreditNoteHasReasonValid()
+        {
+            var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+            dateTimeProviderMock.Setup(x => x.GetDateByTimezoneId(It.IsAny<DateTime>(), It.IsAny<string>()))
+                .Returns(new DateTime(2051, 2, 3));
+
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations)
+            };
+
+            var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
+            sapTaskHandlerMock.Setup(x => x.StartSession())
+                .ReturnsAsync(new SapLoginCookies
+                {
+                    B1Session = "session",
+                    RouteId = "route"
+                });
+
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+                .ReturnsAsync(new SapSaleOrderInvoiceResponse
+                {
+                    BillingSystemId = 2,
+                    CardCode = "CD001",
+                    DocumentLines = new List<SapDocumentLineResponse>
+                    {
+                        new SapDocumentLineResponse
+                        {
+                            FreeText = "1"
+                        },
+                        new SapDocumentLineResponse
+                        {
+                            FreeText = "2"
+                        }
+                    }
+                });
+
+            var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
+            sapServiceSettingsFactoryMock.Setup(x => x.CreateHandler("US"))
+                .Returns(sapTaskHandlerMock.Object);
+
+            var sapConfig = new SapConfig
+            {
+                SapServiceConfigsBySystem = new Dictionary<string, SapServiceConfig>
+                {
+                    {
+                        "US", new SapServiceConfig
+                        {
+                            CompanyDB = "CompanyDb",
+                            Password = "password",
+                            UserName = "Name",
+                            BaseServerUrl = "http://123.123.123/",
+                            BusinessPartnerConfig = new BusinessPartnerConfig
+                            {
+                                Endpoint = "BusinessPartners"
+                            },
+                            BillingConfig = new BillingConfig
+                            {
+                                CreditNotesEndpoint = "CreditNotes"
+                            }
+                        }
+                    }
+                }
+            };
+
+            var sapConfigMock = new Mock<IOptions<SapConfig>>();
+            sapConfigMock.Setup(x => x.Value)
+                .Returns(sapConfig);
+
+            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            var handler = new CreditNoteHandler(
+                sapConfigMock.Object,
+                Mock.Of<ILogger<CreditNoteHandler>>(),
+                sapServiceSettingsFactoryMock.Object,
+                HttpHelperExtension.GetHttpClientMock("", HttpStatusCode.OK, httpMessageHandlerMock),
+                billingMappers);
+
+            var sapTask = new SapTask
+            {
+                CreditNoteRequest = new CreditNoteRequest
+                {
+                    BillingSystemId = 2,
+                    CreditNoteId = 1,
+                    Amount = 20,
+                    Reason = "Bonus"
+                },
+                TaskType = Enums.SapTaskEnum.CreateCreditNote
+            };
+
+            // Act
+            await handler.Handle(sapTask);
+
+
+            // Assert
+            var uriForCreateCreditNote = sapConfig.SapServiceConfigsBySystem["US"].BaseServerUrl + sapConfig.SapServiceConfigsBySystem["US"].BillingConfig.CreditNotesEndpoint;
+            httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post && req.RequestUri == new Uri(uriForCreateCreditNote)
+                                                        && req.Content.ReadAsStringAsync().Result.Contains("\"DocDate\":\"2051-02-03\"")
+                                                        && JsonConvert.DeserializeObject<SapCreditNoteModel>(req.Content.ReadAsStringAsync().Result).DocumentLines.First().ReturnReason == 2
+                                                        && JsonConvert.DeserializeObject<SapCreditNoteModel>(req.Content.ReadAsStringAsync().Result).DocumentLines.Last().ReturnReason == 2),
+            ItExpr.IsAny<CancellationToken>());
+        }
+
+        [Fact]
+        public async Task CreditNoteHandler_AR_ShouldBeSendCreditNoteInSap_WhenCreditNoteHasReasonValid()
+        {
+            var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+            dateTimeProviderMock.Setup(x => x.GetDateByTimezoneId(It.IsAny<DateTime>(), It.IsAny<string>()))
+                .Returns(new DateTime(2051, 2, 3));
+
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForArMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations)
+            };
+
+            var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
+            sapTaskHandlerMock.Setup(x => x.StartSession())
+                .ReturnsAsync(new SapLoginCookies
+                {
+                    B1Session = "session",
+                    RouteId = "route"
+                });
+
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+                .ReturnsAsync(new SapSaleOrderInvoiceResponse
+                {
+                    BillingSystemId = 9,
+                    CardCode = "CD001",
+                    DocumentLines = new List<SapDocumentLineResponse>
+                    {
+                        new SapDocumentLineResponse
+                        {
+                            FreeText = "1"
+                        },
+                        new SapDocumentLineResponse
+                        {
+                            FreeText = "2"
+                        }
+                    }
+                });
+
+            var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
+            sapServiceSettingsFactoryMock.Setup(x => x.CreateHandler("AR"))
+                .Returns(sapTaskHandlerMock.Object);
+
+            var sapConfig = new SapConfig
+            {
+                SapServiceConfigsBySystem = new Dictionary<string, SapServiceConfig>
+                {
+                    {
+                        "AR", new SapServiceConfig
+                        {
+                            CompanyDB = "CompanyDb",
+                            Password = "password",
+                            UserName = "Name",
+                            BaseServerUrl = "http://123.123.123/",
+                            BusinessPartnerConfig = new BusinessPartnerConfig
+                            {
+                                Endpoint = "BusinessPartners"
+                            },
+                            BillingConfig = new BillingConfig
+                            {
+                                CreditNotesEndpoint = "CreditNotes"
+                            }
+                        }
+                    }
+                }
+            };
+
+            var sapConfigMock = new Mock<IOptions<SapConfig>>();
+            sapConfigMock.Setup(x => x.Value)
+                .Returns(sapConfig);
+
+            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            var handler = new CreditNoteHandler(
+                sapConfigMock.Object,
+                Mock.Of<ILogger<CreditNoteHandler>>(),
+                sapServiceSettingsFactoryMock.Object,
+                HttpHelperExtension.GetHttpClientMock("", HttpStatusCode.OK, httpMessageHandlerMock),
+                billingMappers);
+
+            var sapTask = new SapTask
+            {
+                CreditNoteRequest = new CreditNoteRequest
+                {
+                    BillingSystemId = 9,
+                    CreditNoteId = 1,
+                    Amount = 20,
+                    Reason = "11"
+                },
+                TaskType = Enums.SapTaskEnum.CreateCreditNote
+            };
+
+            // Act
+            await handler.Handle(sapTask);
+
+
+            // Assert
+            var uriForCreateCreditNote = sapConfig.SapServiceConfigsBySystem["AR"].BaseServerUrl + sapConfig.SapServiceConfigsBySystem["AR"].BillingConfig.CreditNotesEndpoint;
+            httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post
+                            && req.RequestUri == new Uri(uriForCreateCreditNote)
+                            && req.Content.ReadAsStringAsync().Result.Contains("\"DocDate\":\"2051-02-03\"")
+                            && JsonConvert.DeserializeObject<SapCreditNoteModel>(req.Content.ReadAsStringAsync().Result).DocumentLines.First().ReturnReason == -1
+                            && JsonConvert.DeserializeObject<SapCreditNoteModel>(req.Content.ReadAsStringAsync().Result).DocumentLines.Last().ReturnReason == -1),
+            ItExpr.IsAny<CancellationToken>());
+        }
+
+        [Fact]
+        public async Task CreditNoteHandler_AR_ShouldBeSendCreditNoteInSap_WhenCreditNoteHasNotReasonValid()
+        {
+            var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+            dateTimeProviderMock.Setup(x => x.GetDateByTimezoneId(It.IsAny<DateTime>(), It.IsAny<string>()))
+                .Returns(new DateTime(2051, 2, 3));
+
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForArMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations)
+            };
+
+            var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
+            sapTaskHandlerMock.Setup(x => x.StartSession())
+                .ReturnsAsync(new SapLoginCookies
+                {
+                    B1Session = "session",
+                    RouteId = "route"
+                });
+
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+                .ReturnsAsync(new SapSaleOrderInvoiceResponse
+                {
+                    BillingSystemId = 9,
+                    CardCode = "CD001",
+                    DocumentLines = new List<SapDocumentLineResponse>
+                    {
+                        new SapDocumentLineResponse
+                        {
+                            FreeText = "1"
+                        },
+                        new SapDocumentLineResponse
+                        {
+                            FreeText = "2"
+                        }
+                    }
+                });
+
+            var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
+            sapServiceSettingsFactoryMock.Setup(x => x.CreateHandler("AR"))
+                .Returns(sapTaskHandlerMock.Object);
+
+            var sapConfig = new SapConfig
+            {
+                SapServiceConfigsBySystem = new Dictionary<string, SapServiceConfig>
+                {
+                    {
+                        "AR", new SapServiceConfig
+                        {
+                            CompanyDB = "CompanyDb",
+                            Password = "password",
+                            UserName = "Name",
+                            BaseServerUrl = "http://123.123.123/",
+                            BusinessPartnerConfig = new BusinessPartnerConfig
+                            {
+                                Endpoint = "BusinessPartners"
+                            },
+                            BillingConfig = new BillingConfig
+                            {
+                                CreditNotesEndpoint = "CreditNotes"
+                            }
+                        }
+                    }
+                }
+            };
+
+            var sapConfigMock = new Mock<IOptions<SapConfig>>();
+            sapConfigMock.Setup(x => x.Value)
+                .Returns(sapConfig);
+
+            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            var handler = new CreditNoteHandler(
+                sapConfigMock.Object,
+                Mock.Of<ILogger<CreditNoteHandler>>(),
+                sapServiceSettingsFactoryMock.Object,
+                HttpHelperExtension.GetHttpClientMock("", HttpStatusCode.OK, httpMessageHandlerMock),
+                billingMappers);
+
+            var sapTask = new SapTask
+            {
+                CreditNoteRequest = new CreditNoteRequest
+                {
+                    BillingSystemId = 9,
+                    CreditNoteId = 1,
+                    Amount = 20
+                },
+                TaskType = Enums.SapTaskEnum.CreateCreditNote
+            };
+
+            // Act
+            await handler.Handle(sapTask);
+
+
+            // Assert
+            var uriForCreateCreditNote = sapConfig.SapServiceConfigsBySystem["AR"].BaseServerUrl + sapConfig.SapServiceConfigsBySystem["AR"].BillingConfig.CreditNotesEndpoint;
+            httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post
+                            && req.RequestUri == new Uri(uriForCreateCreditNote)
+                            && req.Content.ReadAsStringAsync().Result.Contains("\"ReturnReason\":-1")),
+            ItExpr.IsAny<CancellationToken>());
+        }
+
+        [Fact]
+        public async Task CreditNoteHandler_US_ShouldBeSendCreditNoteInSap_WhenCreditNoteHasNotReasonValid()
+        {
+            var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+            dateTimeProviderMock.Setup(x => x.GetDateByTimezoneId(It.IsAny<DateTime>(), It.IsAny<string>()))
+                .Returns(new DateTime(2051, 2, 3));
+
+            var timeZoneConfigurations = new TimeZoneConfigurations
+            {
+                InvoicesTimeZone = TimeZoneHelper.GetTimeZoneByOperativeSystem("Argentina Standard Time")
+            };
+
+            var billingMappers = new List<IBillingMapper>
+            {
+                new BillingForUsMapper(Mock.Of<ISapBillingItemsService>(), dateTimeProviderMock.Object, timeZoneConfigurations)
+            };
+
+            var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
+            sapTaskHandlerMock.Setup(x => x.StartSession())
+                .ReturnsAsync(new SapLoginCookies
+                {
+                    B1Session = "session",
+                    RouteId = "route"
+                });
+
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+                .ReturnsAsync(new SapSaleOrderInvoiceResponse
+                {
+                    BillingSystemId = 2,
+                    CardCode = "CD001",
+                    DocumentLines = new List<SapDocumentLineResponse>
+                    {
+                        new SapDocumentLineResponse
+                        {
+                            FreeText = "1"
+                        },
+                        new SapDocumentLineResponse
+                        {
+                            FreeText = "2"
+                        }
+                    }
+                });
+
+            var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
+            sapServiceSettingsFactoryMock.Setup(x => x.CreateHandler("US"))
+                .Returns(sapTaskHandlerMock.Object);
+
+            var sapConfig = new SapConfig
+            {
+                SapServiceConfigsBySystem = new Dictionary<string, SapServiceConfig>
+                {
+                    {
+                        "US", new SapServiceConfig
+                        {
+                            CompanyDB = "CompanyDb",
+                            Password = "password",
+                            UserName = "Name",
+                            BaseServerUrl = "http://123.123.123/",
+                            BusinessPartnerConfig = new BusinessPartnerConfig
+                            {
+                                Endpoint = "BusinessPartners"
+                            },
+                            BillingConfig = new BillingConfig
+                            {
+                                CreditNotesEndpoint = "CreditNotes"
+                            }
+                        }
+                    }
+                }
+            };
+
+            var sapConfigMock = new Mock<IOptions<SapConfig>>();
+            sapConfigMock.Setup(x => x.Value)
+                .Returns(sapConfig);
+
+            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            var handler = new CreditNoteHandler(
+                sapConfigMock.Object,
+                Mock.Of<ILogger<CreditNoteHandler>>(),
+                sapServiceSettingsFactoryMock.Object,
+                HttpHelperExtension.GetHttpClientMock("", HttpStatusCode.OK, httpMessageHandlerMock),
+                billingMappers);
+
+            var sapTask = new SapTask
+            {
+                CreditNoteRequest = new CreditNoteRequest
+                {
+                    BillingSystemId = 2,
+                    CreditNoteId = 1,
+                    Amount = 20
+                },
+                TaskType = Enums.SapTaskEnum.CreateCreditNote
+            };
+
+            // Act
+            await handler.Handle(sapTask);
+
+
+            // Assert
+            var uriForCreateCreditNote = sapConfig.SapServiceConfigsBySystem["US"].BaseServerUrl + sapConfig.SapServiceConfigsBySystem["US"].BillingConfig.CreditNotesEndpoint;
+            httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post && req.RequestUri == new Uri(uriForCreateCreditNote)
+                                                        && req.Content.ReadAsStringAsync().Result.Contains("\"ReturnReason\":-1")),
+            ItExpr.IsAny<CancellationToken>());
         }
     }
 }
