@@ -148,5 +148,55 @@ namespace Doppler.Sap.Test.Mappers
 
             Assert.Equal(groupCode, sapBusinessPartner.GroupCode);
         }
+
+        [Fact]
+        public void BusinessPartnerForUsMapper_ShouldBeSetDifferentContactId_WhenTheClientHasTheSameUserIdForDifferentEmail()
+        {
+            var dopplerUserDto = new DopplerUserDto
+            {
+                PlanType = 0,
+                IsClientManager = true,
+                ClientManagerType = 2,
+                PaymentMethod = 1,
+                FirstName = "Juan",
+                LastName = "Perez",
+                FederalTaxID = "123",
+                BillingStateId = "01",
+                Email = "test@test.com",
+                BillingEmails = new string[] { "test@gmail.com" },
+                BillingSystemId = 2
+            };
+
+            var mapper = new BusinessPartnerForUsMapper();
+            var sapBusinessPartner = mapper.MapDopplerUserToSapBusinessPartner(dopplerUserDto, "CD00001", null);
+
+            Assert.Equal("test1", sapBusinessPartner.ContactEmployees[0].Name);
+            Assert.Equal("test2", sapBusinessPartner.ContactEmployees[1].Name);
+        }
+
+        [Fact]
+        public void BusinessPartnerForUsMapper_ShouldBeSetCurrentContactId_WhenTheClientHasTheDifferentUserIdForDifferentEmail()
+        {
+            var dopplerUserDto = new DopplerUserDto
+            {
+                PlanType = 0,
+                IsClientManager = true,
+                ClientManagerType = 2,
+                PaymentMethod = 1,
+                FirstName = "Juan",
+                LastName = "Perez",
+                FederalTaxID = "123",
+                BillingStateId = "01",
+                Email = "test@test.com",
+                BillingEmails = new string[] { "test1@gmail.com" },
+                BillingSystemId = 2
+            };
+
+            var mapper = new BusinessPartnerForUsMapper();
+            var sapBusinessPartner = mapper.MapDopplerUserToSapBusinessPartner(dopplerUserDto, "CD00001", null);
+
+            Assert.Equal("test1", sapBusinessPartner.ContactEmployees[0].Name);
+            Assert.Equal("test", sapBusinessPartner.ContactEmployees[1].Name);
+        }
     }
 }
