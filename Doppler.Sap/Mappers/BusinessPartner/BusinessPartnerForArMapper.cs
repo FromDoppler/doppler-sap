@@ -83,38 +83,7 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                 Indicator = "FC",
                 DunningTerm = "ReclamoVto",
                 FatherCard = fatherBusinessPartner?.CardCode,
-                ContactEmployees = (dopplerUser.BillingEmails != null && dopplerUser.BillingEmails[0] != String.Empty) ?
-                dopplerUser.BillingEmails
-                    .Select(x => new SapContactEmployee
-                    {
-                        Name = new MailAddress(x.ToLower()).User,
-                        E_Mail = x.ToLower(),
-                        CardCode = cardCode,
-                        Active = "tYES",
-                        EmailGroupCode = "Facturacion"
-                    })
-                    .Append(new SapContactEmployee
-                    {
-                        Name = new MailAddress(dopplerUser.Email.ToLower()).User,
-                        E_Mail = dopplerUser.Email.ToLower(),
-                        CardCode = cardCode,
-                        Active = "tYES",
-                        EmailGroupCode = "Facturacion"
-                    })
-                    .GroupBy(y => y.E_Mail)
-                    .Select(z => z.First())
-                    .ToList()
-                    : new List<SapContactEmployee>
-                        {
-                            new SapContactEmployee
-                                {
-                                    Name = new MailAddress(dopplerUser.Email.ToLower()).User,
-                                    E_Mail = dopplerUser.Email.ToLower(),
-                                        CardCode = cardCode,
-                                    Active = "tYES",
-                                    EmailGroupCode = "Facturacion"
-                                }
-                            },
+                ContactEmployees = GetContactEmployees(dopplerUser, cardCode, "Facturacion"),
                 BPAddresses = new List<Address>
                 {
                     new Address
