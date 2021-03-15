@@ -75,7 +75,7 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                             : "CF",
                 Currency = fatherBusinessPartner?.Currency ?? "##",
                 AliasName = dopplerUser.Email.ToLower(),
-                U_B1SYS_FiscIdType = dopplerUser.FederalTaxType == "DNI" ? "96" : (dopplerUser.FederalTaxType == "CUIT" ? "80" : "99"),
+                U_B1SYS_FiscIdType = CalculateFiscalType(dopplerUser.IdConsumerType, dopplerUser.FederalTaxID.Replace("-", "")),
                 CardType = "C",
                 U_DPL_CANCELED = dopplerUser.Cancelated ? "Y" : "N",
                 U_DPL_SUSPENDED = dopplerUser.Blocked ? "Y" : "N",
@@ -134,6 +134,20 @@ namespace Doppler.Sap.Mappers.BusinessPartner
             }
 
             return newBusinessPartner;
+        }
+
+        private string CalculateFiscalType(int? idConsumerType, string federalTaxID)
+        {
+            var consumer = idConsumerType.HasValue ?
+                            (Dictionary.ConsumerTypesDictionary.TryGetValue(idConsumerType, out string consumerType) ? consumerType : "CF")
+                            : "CF";
+
+            if (consumer == "CF")
+            {
+                return (federalTaxID.Length <= 8 ? (int)FiscalTypeEnum.DNI : (int)FiscalTypeEnum.CUIL).ToString();
+            }
+
+            return ((int)FiscalTypeEnum.CUIT).ToString();
         }
     }
 }
