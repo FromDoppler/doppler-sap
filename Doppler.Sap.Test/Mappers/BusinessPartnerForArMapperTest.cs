@@ -1,3 +1,4 @@
+using Doppler.Sap.Enums;
 using Doppler.Sap.Mappers.BusinessPartner;
 using Doppler.Sap.Models;
 using Xunit;
@@ -197,6 +198,82 @@ namespace Doppler.Sap.Test.Mappers
 
             Assert.Equal("test1", sapBusinessPartner.ContactEmployees[0].Name);
             Assert.Equal("test", sapBusinessPartner.ContactEmployees[1].Name);
+        }
+
+
+        [Fact]
+        public void BusinessPartnerForArMapper_ShouldBeSetDniInFiscalType_WhenTheClientIsCfAndHasADni()
+        {
+            var dopplerUserDto = new DopplerUserDto
+            {
+                PlanType = 0,
+                IsClientManager = true,
+                ClientManagerType = 2,
+                PaymentMethod = 1,
+                FirstName = "Juan",
+                LastName = "Perez",
+                FederalTaxID = "123",
+                BillingStateId = "01",
+                Email = "test@test.com",
+                BillingEmails = new string[] { "test1@gmail.com" },
+                BillingSystemId = 2,
+                IdConsumerType = 1,
+            };
+
+            var mapper = new BusinessPartnerForArMapper();
+            var sapBusinessPartner = mapper.MapDopplerUserToSapBusinessPartner(dopplerUserDto, "CD00001", null);
+
+            Assert.Equal(((int)FiscalTypeEnum.DNI).ToString(), sapBusinessPartner.U_B1SYS_FiscIdType);
+        }
+
+        [Fact]
+        public void BusinessPartnerForArMapper_ShouldBeSetCuilInFiscalType_WhenTheClientIsCfAndHasACuil()
+        {
+            var dopplerUserDto = new DopplerUserDto
+            {
+                PlanType = 0,
+                IsClientManager = true,
+                ClientManagerType = 2,
+                PaymentMethod = 1,
+                FirstName = "Juan",
+                LastName = "Perez",
+                FederalTaxID = "30126459870",
+                BillingStateId = "01",
+                Email = "test@test.com",
+                BillingEmails = new string[] { "test1@gmail.com" },
+                BillingSystemId = 2,
+                IdConsumerType = 1,
+            };
+
+            var mapper = new BusinessPartnerForArMapper();
+            var sapBusinessPartner = mapper.MapDopplerUserToSapBusinessPartner(dopplerUserDto, "CD00001", null);
+
+            Assert.Equal(((int)FiscalTypeEnum.CUIL).ToString(), sapBusinessPartner.U_B1SYS_FiscIdType);
+        }
+
+        [Fact]
+        public void BusinessPartnerForArMapper_ShouldBeSetCuitInFiscalType_WhenTheClientIsDifferentThatCf()
+        {
+            var dopplerUserDto = new DopplerUserDto
+            {
+                PlanType = 0,
+                IsClientManager = true,
+                ClientManagerType = 2,
+                PaymentMethod = 1,
+                FirstName = "Juan",
+                LastName = "Perez",
+                FederalTaxID = "30126459870",
+                BillingStateId = "01",
+                Email = "test@test.com",
+                BillingEmails = new string[] { "test1@gmail.com" },
+                BillingSystemId = 2,
+                IdConsumerType = 2,
+            };
+
+            var mapper = new BusinessPartnerForArMapper();
+            var sapBusinessPartner = mapper.MapDopplerUserToSapBusinessPartner(dopplerUserDto, "CD00001", null);
+
+            Assert.Equal(((int)FiscalTypeEnum.CUIT).ToString(), sapBusinessPartner.U_B1SYS_FiscIdType);
         }
     }
 }
