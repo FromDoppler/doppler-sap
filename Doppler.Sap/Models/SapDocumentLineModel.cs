@@ -14,8 +14,8 @@ namespace Doppler.Sap.Models
         public string Currency { get; set; }
         public string FreeText { get; set; }
         public string CostingCode { get; set; } = "1000";
-        public string CostingCode2 { get; set; } = "1100";
-        public string CostingCode3 { get; set; } = "Arg";
+        public string CostingCode2 { get; set; } = "NOAPLI2";
+        public string CostingCode3 { get; set; } = "ARG0000";
         public string CostingCode4 { get; set; } = "NOAPLI4";
         public int? DiscountPercent { get; set; }
     }
