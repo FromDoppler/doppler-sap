@@ -13,8 +13,8 @@ namespace Doppler.Sap.Mappers.Billing
     {
         private const string _sapSystemSupported = "AR";
         private const string _costingCode1 = "1000";
-        private const string _costingCode2 = "1100";
-        private const string _costingCode3 = "Arg";
+        private const string _costingCode2 = "NOAPLI2";
+        private const string _costingCode3 = "ARG0000";
         private const string _costingCode4 = "NOAPLI4";
         private const int _invoiceType = 13;
 
