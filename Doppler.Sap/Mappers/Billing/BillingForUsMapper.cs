@@ -270,7 +270,6 @@ namespace Doppler.Sap.Mappers.Billing
                     CostingCode3 = line.CostingCode3,
                     CostingCode4 = line.CostingCode4,
                     Currency = line.Currency,
-                    DiscountPercent = (int)line.DiscountPercent,
                     FreeText = isPartial ? $"Partial refund - Invoice: {sapSaleOrderInvoiceResponse.DocNum}." : $"Cancel invoice: {sapSaleOrderInvoiceResponse.DocNum}.",
                     ItemCode = line.ItemCode,
                     Quantity = line.Quantity,
