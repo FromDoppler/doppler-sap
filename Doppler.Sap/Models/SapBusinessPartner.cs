@@ -29,6 +29,7 @@ namespace Doppler.Sap.Models
         public string Properties12 { get; set; }
         public string Properties13 { get; set; }
         public string Properties14 { get; set; }
+        public string Properties15 { get; set; }
         public List<SapContactEmployee> ContactEmployees { get; set; }
         public string AliasName { get; set; }
         public string Currency { get; set; }

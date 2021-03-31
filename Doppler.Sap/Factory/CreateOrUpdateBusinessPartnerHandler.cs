@@ -62,6 +62,8 @@ namespace Doppler.Sap.Factory
         {
             var serviceSetting = SapServiceSettings.GetSettings(_sapConfig, sapSystem);
             var uriString = $"{serviceSetting.BaseServerUrl}{serviceSetting.BusinessPartnerConfig.Endpoint}/";
+
+            dequeuedTask.BusinessPartner.Properties15 = "tYES";
             var sapResponse = await SendMessage(dequeuedTask.BusinessPartner, sapSystem, uriString, HttpMethod.Post);
 
             var taskResult = new SapTaskResult
