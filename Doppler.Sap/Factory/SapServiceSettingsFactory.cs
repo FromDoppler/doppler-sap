@@ -37,14 +37,14 @@ namespace Doppler.Sap.Factory
             // Check if exists settings for the countryCode
             if (!_sapConfig.SapServiceConfigsBySystem.TryGetValue(sapSystem, out var serviceSettings))
             {
-                throw new ArgumentException(nameof(sapSystem), $"The sapSystem '{sapSystem}' is not supported.");
+                throw new ArgumentException($"The sapSystem '{sapSystem}' does not have a settings.", sapSystem);
             }
 
             // Check if exists business partner mapper for the countryCode
             var mapper = _businessPartnerMappers.FirstOrDefault(m => m.CanMapCountry(sapSystem));
             if (mapper == null)
             {
-                throw new ArgumentException(nameof(sapSystem), $"The sapSystem '{sapSystem}' is not supported.");
+                throw new ArgumentException($"The sapSystem '{sapSystem}' does not have a mapper.", sapSystem);
             }
 
             return new SapTaskHandler(_sapConfig, _logger, _httpClientFactory, _dateTimeProvider, serviceSettings, mapper);

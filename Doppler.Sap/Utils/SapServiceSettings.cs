@@ -9,7 +9,7 @@ namespace Doppler.Sap.Utils
         {
             if (!sapConfig.SapServiceConfigsBySystem.TryGetValue(sapSystem, out var serviceSettings))
             {
-                throw new ArgumentException(nameof(sapSystem), $"The sapSystem '{sapSystem}' is not supported.");
+                throw new ArgumentException($"The sapSystem '{sapSystem}' does not have settings.", sapSystem);
             }
 
             return serviceSettings;

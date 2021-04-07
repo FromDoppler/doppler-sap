@@ -108,7 +108,7 @@ namespace Doppler.Sap.Services
                 catch (Exception e)
                 {
                     _logger.LogError($"Failed at generating billing request for user: {billing.Id}.", e);
-                    await _slackService.SendNotification($"Failed at generating billing request for user: {billing.Id}. Error: {e.Message}");
+                    await _slackService.SendNotification($"Failed at generating billing request for user: {billing.Id} and billingSystem: {SapSystemHelper.GetSapSystemByBillingSystem(billing.BillingSystemId)}. Error: {e.Message}");
                 }
             }
         }
@@ -203,8 +203,8 @@ namespace Doppler.Sap.Services
             }
             catch (Exception e)
             {
-                _logger.LogError($"Failed at update credit note request for invoice: {cancelCreditNoteRequest.CreditNoteId}.", e);
-                await _slackService.SendNotification($"Failed at update credit note request for invoice: {cancelCreditNoteRequest.CreditNoteId}. Error: {e.Message}");
+                _logger.LogError($"Failed at cancel credit note request for invoice: {cancelCreditNoteRequest.CreditNoteId}.", e);
+                await _slackService.SendNotification($"Failed at cancel credit note request for invoice: {cancelCreditNoteRequest.CreditNoteId}. Error: {e.Message}");
             }
         }
 
@@ -223,7 +223,7 @@ namespace Doppler.Sap.Services
             if (mapper == null)
             {
                 _logger.LogError($"Billing Request won't be sent to SAP because the sapSystem '{sapSystem}' is not supported.");
-                throw new ArgumentException(nameof(sapSystem), $"The sapSystem '{sapSystem}' is not supported.");
+                throw new ArgumentException($"The sapSystem '{sapSystem}' does not have a mapper.");
             }
 
             return mapper;
@@ -236,7 +236,7 @@ namespace Doppler.Sap.Services
             if (validator == null)
             {
                 _logger.LogError($"Billing Request won't be sent to SAP because the sapSystem '{sapSystem}' is not supported.");
-                throw new ArgumentException(nameof(sapSystem), $"The sapSystem '{sapSystem}' is not supported.");
+                throw new ArgumentException($"The sapSystem '{sapSystem}' does not have validator.", sapSystem);
             }
 
             return validator;

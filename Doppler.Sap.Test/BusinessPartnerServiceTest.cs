@@ -120,7 +120,7 @@ namespace Doppler.Sap.Test
             };
 
             var ex = Assert.ThrowsAsync<ArgumentException>(() => businessPartnerService.CreateOrUpdateBusinessPartner(dopplerUser));
-            Assert.Equal("sapSystem (Parameter 'The sapSystem '' is not supported.')", ex.Result.Message);
+            Assert.Equal("The sapSystem '' does not have a validator.", ex.Result.Message);
         }
 
         [Fact]
@@ -359,7 +359,7 @@ namespace Doppler.Sap.Test
             };
 
             var ex = Assert.ThrowsAsync<ArgumentException>(() => businessPartnerService.CreateOrUpdateBusinessPartner(dopplerUser));
-            Assert.Equal("sapSystem (Parameter 'The sapSystem '' is not supported.')", ex.Result.Message);
+            Assert.Equal("The sapSystem '' does not have a validator.", ex.Result.Message);
         }
     }
 }
