@@ -108,7 +108,7 @@ namespace Doppler.Sap.Services
                 catch (Exception e)
                 {
                     _logger.LogError($"Failed at generating billing request for user: {billing.Id}.", e);
-                    await _slackService.SendNotification($"Failed at generating billing request for user: {billing.Id} and billingSystem: {SapSystemHelper.GetSapSystemByBillingSystem(billing.BillingSystemId)}. Error: {e.Message}");
+                    await _slackService.SendNotification($"Failed at generating billing request for user: {billing.Id} and billingSystem: {billing.BillingSystemId}. Error: {e.Message}");
                 }
             }
         }
