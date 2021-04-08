@@ -117,7 +117,7 @@ namespace Doppler.Sap.Factory
             if (mapper == null)
             {
                 _logger.LogError($"Billing Request won't be sent to SAP because the sapSystem '{sapSystem}' is not supported.");
-                throw new ArgumentException(nameof(sapSystem), $"The sapSystem '{sapSystem}' is not supported.");
+                throw new ArgumentException($"The sapSystem '{sapSystem}' does not have a mapper.", sapSystem);
             }
 
             return mapper;
@@ -130,7 +130,7 @@ namespace Doppler.Sap.Factory
             if (validator == null)
             {
                 _logger.LogError($"Billing Request won't be sent to SAP because the sapSystem '{sapSystem}' is not supported.");
-                throw new ArgumentException(nameof(sapSystem), $"The sapSystem '{sapSystem}' is not supported.");
+                throw new ArgumentException($"The sapSystem '{sapSystem}' does not have a validator.");
             }
 
             return validator;
