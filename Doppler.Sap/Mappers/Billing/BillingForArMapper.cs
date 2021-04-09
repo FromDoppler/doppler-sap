@@ -41,6 +41,7 @@ namespace Doppler.Sap.Mappers.Billing
                 NumAtCard = billingRequest.PurchaseOrder ?? "",
                 U_DPL_RECURRING_SERV = billingRequest.IsPlanUpgrade ? "N" : "Y",
                 U_DPL_FIRST_PURCHASE = billingRequest.IsFirstPurchase ? "Y" : "N",
+                U_DPL_INV_ID = billingRequest.InvoiceId,
                 DocumentLines = new List<SapDocumentLineModel>(),
                 DocDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
                 DocDueDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
@@ -51,30 +52,35 @@ namespace Doppler.Sap.Mappers.Billing
 
             var itemCode = _sapBillingItemsService.GetItemCode(billingRequest.PlanType, billingRequest.CreditsOrSubscribersQuantity, billingRequest.IsCustomPlan);
 
-            var planItem = new SapDocumentLineModel
+            var amount = billingRequest.DiscountedAmount.HasValue ? billingRequest.DiscountedAmount.Value : billingRequest.PlanFee;
+
+            if (amount > 0)
             {
-                ItemCode = itemCode,
-                UnitPrice = billingRequest.PlanFee,
-                Currency = currencyCode,
-                FreeText = $"{currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)} + IMP",
-                DiscountPercent = billingRequest.Discount ?? 0,
-                CostingCode = _costingCode1,
-                CostingCode2 = _costingCode2,
-                CostingCode3 = _costingCode3,
-                CostingCode4 = _costingCode4
-            };
+                var planItem = new SapDocumentLineModel
+                {
+                    ItemCode = itemCode,
+                    UnitPrice = amount,
+                    Currency = currencyCode,
+                    FreeText = $"{currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)} + IMP",
+                    DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : billingRequest.Discount ?? 0,
+                    CostingCode = _costingCode1,
+                    CostingCode2 = _costingCode2,
+                    CostingCode3 = _costingCode3,
+                    CostingCode4 = _costingCode4
+                };
 
-            var freeText = new
-            {
-                Amount = $"{currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)} + IMP",
-                Periodicity = billingRequest.Periodicity != null ? $"Plan {(Dictionary.PeriodicityDictionary.TryGetValue(billingRequest.Periodicity, out var outPeriodicity) ? outPeriodicity : string.Empty)}" : null,
-                Discount = billingRequest.Discount > 0 ? $"Descuento {billingRequest.Discount}%" : null,
-                Payment = billingRequest.Periodicity != null ? $"Abono {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
-            };
+                var freeText = new
+                {
+                    Amount = $"{currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)} + IMP",
+                    Periodicity = billingRequest.Periodicity != null ? $"Plan {(Dictionary.PeriodicityDictionary.TryGetValue(billingRequest.Periodicity, out var outPeriodicity) ? outPeriodicity : string.Empty)}" : null,
+                    Discount = billingRequest.Discount > 0 ? $"Descuento {billingRequest.Discount}%" : null,
+                    Payment = billingRequest.Periodicity != null ? $"Abono {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
+                };
 
-            planItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                planItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
 
-            sapSaleOrder.DocumentLines.Add(planItem);
+                sapSaleOrder.DocumentLines.Add(planItem);
+            }
 
             if (billingRequest.ExtraEmails > 0)
             {
