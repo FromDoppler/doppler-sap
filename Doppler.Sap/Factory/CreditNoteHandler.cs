@@ -42,7 +42,7 @@ namespace Doppler.Sap.Factory
             {
                 var sapSystem = SapSystemHelper.GetSapSystemByBillingSystem(dequeuedTask.CreditNoteRequest.BillingSystemId);
                 var sapTaskHandler = _sapServiceSettingsFactory.CreateHandler(sapSystem);
-                var existentInvoice = await sapTaskHandler.TryGetInvoiceByInvoiceId(dequeuedTask.CreditNoteRequest.InvoiceId);
+                var existentInvoice = await sapTaskHandler.TryGetInvoiceByInvoiceIdAndOrigin(dequeuedTask.CreditNoteRequest.InvoiceId, "doppler");
 
                 if (existentInvoice != null)
                 {

@@ -43,9 +43,10 @@ namespace Doppler.Sap.Factory
         {
             try
             {
+                var origin = !string.IsNullOrEmpty(dequeuedTask.BillingRequest.CardCode) ? dequeuedTask.BillingRequest.CardCode.StartsWith("CR") ? "relay" : "doppler" : "doppler";
                 var sapSystem = SapSystemHelper.GetSapSystemByBillingSystem(dequeuedTask.BillingRequest.BillingSystemId);
                 var sapTaskHandler = _sapServiceSettingsFactory.CreateHandler(sapSystem);
-                var existentInvoice = dequeuedTask.BillingRequest.InvoiceId != 0 ? await sapTaskHandler.TryGetInvoiceByInvoiceId(dequeuedTask.BillingRequest.InvoiceId) : null;
+                var existentInvoice = dequeuedTask.BillingRequest.InvoiceId != 0 ? await sapTaskHandler.TryGetInvoiceByInvoiceIdAndOrigin(dequeuedTask.BillingRequest.InvoiceId, origin) : null;
                 var sapResponse = (dequeuedTask.TaskType == Enums.SapTaskEnum.BillingRequest) ? await CreateInvoice(dequeuedTask, sapSystem) : await UpdateInvoice(dequeuedTask, sapSystem, existentInvoice);
 
                 if (sapResponse.IsSuccessful)

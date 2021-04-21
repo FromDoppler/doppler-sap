@@ -9,7 +9,7 @@ namespace Doppler.Sap.Factory
         Task<SapBusinessPartner> TryGetBusinessPartner(int userId, string cuit, int userPlanTypeId);
         Task<SapBusinessPartner> TryGetBusinessPartnerByCardCode(string cardCode);
         Task<SapTask> CreateBusinessPartnerFromDopplerUser(SapTask task);
-        Task<SapSaleOrderInvoiceResponse> TryGetInvoiceByInvoiceId(int invoiceId);
+        Task<SapSaleOrderInvoiceResponse> TryGetInvoiceByInvoiceIdAndOrigin(int invoiceId, string origin);
         Task<SapCreditNoteResponse> TryGetCreditNoteByCreditNoteId(int creditNoteId);
     }
 }
