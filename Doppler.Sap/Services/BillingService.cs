@@ -208,10 +208,10 @@ namespace Doppler.Sap.Services
             }
         }
 
-        public async Task<InvoiceResponse> GetInvoiceByDopplerInvoiceId(int billingSystemId, int dopplerInvoiceId)
+        public async Task<InvoiceResponse> GetInvoiceByDopplerInvoiceIdAndOrigin(int billingSystemId, int dopplerInvoiceId, string origin)
         {
             var sapSystem = SapSystemHelper.GetSapSystemByBillingSystem(billingSystemId);
-            var response = await _sapServiceSettingsFactory.CreateHandler(sapSystem).TryGetInvoiceByInvoiceId(dopplerInvoiceId);
+            var response = await _sapServiceSettingsFactory.CreateHandler(sapSystem).TryGetInvoiceByInvoiceIdAndOrigin(dopplerInvoiceId, origin);
             return (response != null) ? GetMapper(sapSystem).MapToInvoice(response) : null;
         }
 

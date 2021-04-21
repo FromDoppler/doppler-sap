@@ -858,7 +858,7 @@ namespace Doppler.Sap.Test
             };
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
-            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(invoiceId))
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceIdAndOrigin(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(new SapSaleOrderInvoiceResponse
                 {
                     BillingSystemId = billingSystemId,
@@ -877,13 +877,13 @@ namespace Doppler.Sap.Test
                 null,
                 sapServiceSettingsFactoryMock.Object);
 
-            var response = await billingService.GetInvoiceByDopplerInvoiceId(billingSystemId, invoiceId);
+            var response = await billingService.GetInvoiceByDopplerInvoiceIdAndOrigin(billingSystemId, invoiceId, "doppler");
 
             Assert.NotNull(response);
             Assert.Equal(billingSystemId, response.BillingSystemId);
             Assert.Equal("CD001", response.CardCode);
             Assert.Equal(1, response.DocEntry);
-            sapTaskHandlerMock.Verify(x => x.TryGetInvoiceByInvoiceId(invoiceId), Times.Once);
+            sapTaskHandlerMock.Verify(x => x.TryGetInvoiceByInvoiceIdAndOrigin(invoiceId, "doppler"), Times.Once);
         }
 
         [Fact]
@@ -904,7 +904,7 @@ namespace Doppler.Sap.Test
             };
 
             var sapTaskHandlerMock = new Mock<ISapTaskHandler>();
-            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(invoiceId))
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceIdAndOrigin(invoiceId, "doppler"))
                 .ReturnsAsync((SapSaleOrderInvoiceResponse)null);
 
             var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
@@ -918,10 +918,10 @@ namespace Doppler.Sap.Test
                 null,
                 sapServiceSettingsFactoryMock.Object);
 
-            var response = await billingService.GetInvoiceByDopplerInvoiceId(billingSystemId, invoiceId);
+            var response = await billingService.GetInvoiceByDopplerInvoiceIdAndOrigin(billingSystemId, invoiceId, "doppler");
 
             Assert.Null(response);
-            sapTaskHandlerMock.Verify(x => x.TryGetInvoiceByInvoiceId(invoiceId), Times.Once);
+            sapTaskHandlerMock.Verify(x => x.TryGetInvoiceByInvoiceIdAndOrigin(invoiceId, "doppler"), Times.Once);
         }
     }
 }

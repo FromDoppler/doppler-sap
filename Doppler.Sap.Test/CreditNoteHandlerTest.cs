@@ -96,7 +96,7 @@ namespace Doppler.Sap.Test
                 });
 
 
-            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceIdAndOrigin(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(sapSaleOrderInvoiceResponse);
 
             var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
@@ -212,7 +212,7 @@ namespace Doppler.Sap.Test
                 });
 
 
-            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceIdAndOrigin(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(sapSaleOrderInvoiceResponse);
 
             var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
@@ -294,7 +294,7 @@ namespace Doppler.Sap.Test
                     RouteId = "route"
                 });
 
-            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceIdAndOrigin(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync((SapSaleOrderInvoiceResponse)null);
 
             var sapServiceSettingsFactoryMock = new Mock<ISapServiceSettingsFactory>();
@@ -716,7 +716,7 @@ namespace Doppler.Sap.Test
                     RouteId = "route"
                 });
 
-            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceIdAndOrigin(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(new SapSaleOrderInvoiceResponse
                 {
                     BillingSystemId = 2,
@@ -826,7 +826,7 @@ namespace Doppler.Sap.Test
                     RouteId = "route"
                 });
 
-            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceIdAndOrigin(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(new SapSaleOrderInvoiceResponse
                 {
                     BillingSystemId = 9,
@@ -937,7 +937,7 @@ namespace Doppler.Sap.Test
                     RouteId = "route"
                 });
 
-            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceIdAndOrigin(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(new SapSaleOrderInvoiceResponse
                 {
                     BillingSystemId = 9,
@@ -1045,7 +1045,7 @@ namespace Doppler.Sap.Test
                     RouteId = "route"
                 });
 
-            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceId(It.IsAny<int>()))
+            sapTaskHandlerMock.Setup(x => x.TryGetInvoiceByInvoiceIdAndOrigin(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(new SapSaleOrderInvoiceResponse
                 {
                     BillingSystemId = 2,
