@@ -137,6 +137,7 @@ namespace Doppler.Sap.Mappers.Billing
         {
             return new SapSaleOrderModel
             {
+                PlanType = updateBillingRequest.PlanType,
                 BillingSystemId = updateBillingRequest.BillingSystemId,
                 InvoiceId = updateBillingRequest.InvoiceId,
                 U_DPL_CARD_ERROR_COD = updateBillingRequest.CardErrorCode,

@@ -2,6 +2,7 @@ namespace Doppler.Sap.Models
 {
     public class UpdatePaymentStatusRequest
     {
+        public int PlanType { get; set; }
         public int InvoiceId { get; set; }
         public int BillingSystemId { get; set; }
         public string CardErrorCode { get; set; }
