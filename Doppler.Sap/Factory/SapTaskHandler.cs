@@ -167,10 +167,10 @@ namespace Doppler.Sap.Factory
 
         public async Task<SapSaleOrderInvoiceResponse> TryGetInvoiceByInvoiceIdAndOrigin(int invoiceId, string origin)
         {
-            var startWith = origin == "relay" ? "CR" : "CD";
+            var startWithFilter = origin == "relay" ? "startswith(CardCode, 'CR')" : "not startswith(CardCode, 'CR')";
             var message = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{_sapServiceConfig.BaseServerUrl}{_sapServiceConfig.BillingConfig.Endpoint}?$filter=U_DPL_INV_ID eq {invoiceId} and Cancelled eq 'tNO' and startswith(CardCode,'{startWith}')"),
+                RequestUri = new Uri($"{_sapServiceConfig.BaseServerUrl}{_sapServiceConfig.BillingConfig.Endpoint}?$filter=U_DPL_INV_ID eq {invoiceId} and Cancelled eq 'tNO' and {startWithFilter}"),
                 Method = HttpMethod.Get
             };
 
