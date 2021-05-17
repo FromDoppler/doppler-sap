@@ -36,6 +36,8 @@ namespace Doppler.Sap.Mappers.Billing
 
         public SapSaleOrderModel MapDopplerBillingRequestToSapSaleOrder(BillingRequest billingRequest)
         {
+            var invoiceDate = (billingRequest.InvoiceDate ?? _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone)).ToString("yyyy-MM-dd");
+
             var sapSaleOrder = new SapSaleOrderModel
             {
                 NumAtCard = billingRequest.PurchaseOrder ?? "",
@@ -43,11 +45,12 @@ namespace Doppler.Sap.Mappers.Billing
                 U_DPL_FIRST_PURCHASE = billingRequest.IsFirstPurchase ? "Y" : "N",
                 U_DPL_INV_ID = billingRequest.InvoiceId,
                 DocumentLines = new List<SapDocumentLineModel>(),
-                DocDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
-                DocDueDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
-                TaxDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
+                DocDate = invoiceDate,
+                DocDueDate = invoiceDate,
+                TaxDate = invoiceDate,
                 InvoiceId = billingRequest.InvoiceId
             };
+
             var currencyCode = Dictionary.CurrencyDictionary.TryGetValue(billingRequest.Currency, out var code) ? code : "";
 
             var itemCode = _sapBillingItemsService.GetItemCode(billingRequest.PlanType, billingRequest.CreditsOrSubscribersQuantity, billingRequest.IsCustomPlan);
@@ -121,7 +124,7 @@ namespace Doppler.Sap.Mappers.Billing
             return sapSaleOrder;
         }
 
-        public SapIncomingPaymentModel MapSapIncomingPayment(int docEntry, string cardCode, decimal docTotal, string transferReference)
+        public SapIncomingPaymentModel MapSapIncomingPayment(int docEntry, string cardCode, decimal docTotal, string transferReference, DateTime? paymentDate)
         {
             //Is not implemented because at the moment is not necessary the send the Payment to SAP
             throw new System.NotImplementedException();
@@ -143,7 +146,8 @@ namespace Doppler.Sap.Mappers.Billing
                 U_DPL_CARD_ERROR_COD = updateBillingRequest.CardErrorCode,
                 U_DPL_CARD_ERROR_DET = updateBillingRequest.CardErrorDetail,
                 TransactionApproved = updateBillingRequest.TransactionApproved,
-                TransferReference = updateBillingRequest.TransferReference
+                TransferReference = updateBillingRequest.TransferReference,
+                PaymentDate = updateBillingRequest.PaymentDate
             };
         }
 

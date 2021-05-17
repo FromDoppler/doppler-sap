@@ -65,6 +65,9 @@ namespace Doppler.Sap.Mappers.Billing
 
         public SapSaleOrderModel MapDopplerBillingRequestToSapSaleOrder(BillingRequest billingRequest)
         {
+            var date = (billingRequest.InvoiceDate ?? _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone)).ToString("yyyy-MM-dd");
+            var paymentDate = billingRequest.PaymentDate ?? _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone);
+
             var sapSaleOrder = new SapSaleOrderModel
             {
                 NumAtCard = billingRequest.PurchaseOrder ?? "",
@@ -77,10 +80,11 @@ namespace Doppler.Sap.Mappers.Billing
                 U_DPL_CARD_ERROR_DET = billingRequest.CardErrorDetail,
                 U_DPL_INV_ID = billingRequest.InvoiceId,
                 DocumentLines = new List<SapDocumentLineModel>(),
-                DocDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
-                DocDueDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
-                TaxDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
-                InvoiceId = billingRequest.InvoiceId
+                DocDate = date,
+                DocDueDate = date,
+                TaxDate = date,
+                InvoiceId = billingRequest.InvoiceId,
+                PaymentDate = paymentDate
             };
 
             var itemCode = _sapBillingItemsService.GetItemCode(billingRequest.PlanType, billingRequest.CreditsOrSubscribersQuantity, billingRequest.IsCustomPlan);
@@ -156,13 +160,15 @@ namespace Doppler.Sap.Mappers.Billing
             return sapSaleOrder;
         }
 
-        public SapIncomingPaymentModel MapSapIncomingPayment(int docEntry, string cardCode, decimal docTotal, string transferReference)
+        public SapIncomingPaymentModel MapSapIncomingPayment(int docEntry, string cardCode, decimal docTotal, string transferReference, DateTime? paymentDate)
         {
+            var date = (paymentDate ?? _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone)).ToString("yyyy-MM-dd");
+
             var newIncomingPayment = new SapIncomingPaymentModel
             {
-                DocDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
-                TransferDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
-                TaxDate = _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone).ToString("yyyy-MM-dd"),
+                DocDate = date,
+                TransferDate = date,
+                TaxDate = date,
                 CardCode = cardCode,
                 DocType = "rCustomer",
                 DocCurrency = _currencyCode,
@@ -227,7 +233,8 @@ namespace Doppler.Sap.Mappers.Billing
                 U_DPL_CARD_ERROR_DET = updateBillingRequest.CardErrorDetail,
                 TransactionApproved = updateBillingRequest.TransactionApproved,
                 TransferReference = updateBillingRequest.TransferReference,
-                U_DPL_INV_ID = updateBillingRequest.InvoiceId
+                U_DPL_INV_ID = updateBillingRequest.InvoiceId,
+                PaymentDate = updateBillingRequest.PaymentDate
             };
         }
 

@@ -26,5 +26,6 @@ namespace Doppler.Sap.Models
         public string U_DPL_FIRST_PURCHASE { get; set; }
         public bool TransactionApproved { get; set; }
         public string TransferReference { get; set; }
+        public DateTime? PaymentDate { get; set; }
     }
 }
