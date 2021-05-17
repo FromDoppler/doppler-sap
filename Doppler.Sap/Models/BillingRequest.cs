@@ -1,3 +1,5 @@
+using System;
+
 namespace Doppler.Sap.Models
 {
     public class BillingRequest
@@ -31,5 +33,7 @@ namespace Doppler.Sap.Models
         public string TransferReference { get; set; }
         public double? DiscountedAmount { get; set; }
         public bool IsFirstPurchase { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public DateTime? PaymentDate { get; set; }
     }
 }
