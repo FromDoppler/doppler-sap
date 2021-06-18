@@ -62,6 +62,14 @@ namespace Doppler.Sap.Factory
                 else
                 {
                     _logger.LogError($"Invoice/Sales Order could'n create to SAP because exists an error: '{sapResponse.SapResponseContent}'.");
+                    var ss = dequeuedTask.TaskType;
+                    return new SapTaskResult
+                    {
+                        IsSuccessful = false,
+                        SapResponseContent = $"Invoice/Sales Order could'n create to SAP because exists an error: '{sapResponse.SapResponseContent}'.",
+                        TaskName = dequeuedTask.TaskType == Enums.SapTaskEnum.BillingRequest ? "Creating Billing Request" : "Updating Billing Request",
+                        IdUser = dequeuedTask.BillingRequest.UserId.ToString()
+                    };
                 }
 
                 return sapResponse;

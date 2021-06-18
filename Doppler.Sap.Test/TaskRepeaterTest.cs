@@ -19,7 +19,10 @@ namespace Doppler.Sap.Test
             var sapServiceMock = new Mock<ISapService>();
             var loggerMock = new Mock<ILogger<TaskRepeater>>();
 
-            using var sapTaskHandler = new TaskRepeater(loggerMock.Object, queueMock.Object, sapServiceMock.Object);
+            var slackServiceMock = new Mock<ISlackService>();
+            slackServiceMock.Setup(x => x.SendNotification(It.IsAny<string>()));
+
+            using var sapTaskHandler = new TaskRepeater(loggerMock.Object, queueMock.Object, sapServiceMock.Object, slackServiceMock.Object);
 
             // We want only a result
             queueMock.SetupSequence(x => x.GetFromTaskQueue())
@@ -65,7 +68,10 @@ namespace Doppler.Sap.Test
             var sapServiceMock = new Mock<ISapService>();
             var loggerMock = new Mock<ILogger<TaskRepeater>>();
 
-            using var sapTaskHandler = new TaskRepeater(loggerMock.Object, queueMock.Object, sapServiceMock.Object);
+            var slackServiceMock = new Mock<ISlackService>();
+            slackServiceMock.Setup(x => x.SendNotification(It.IsAny<string>()));
+
+            using var sapTaskHandler = new TaskRepeater(loggerMock.Object, queueMock.Object, sapServiceMock.Object, slackServiceMock.Object);
 
             queueMock.SetupSequence(x => x.GetFromTaskQueue())
                 .Returns(new SapTask

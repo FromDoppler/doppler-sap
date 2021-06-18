@@ -174,7 +174,7 @@ namespace Doppler.Sap.Test
             var result = await handler.Handle(sapTask);
 
             Assert.False(result.IsSuccessful);
-            Assert.Equal($"Failed at generating billing request for the user: {sapTask.BillingRequest.UserId}.", result.SapResponseContent);
+            Assert.Equal($"Invoice/Sales Order could'n create to SAP because exists an error: 'Failed at generating billing request for the user: {sapTask.BillingRequest.UserId}.'.", result.SapResponseContent);
             Assert.Equal("Creating Billing Request", result.TaskName);
         }
 
@@ -236,7 +236,7 @@ namespace Doppler.Sap.Test
             var result = await handler.Handle(sapTask);
 
             Assert.False(result.IsSuccessful);
-            Assert.Equal($"Failed at generating billing request for the user: {sapTask.BillingRequest.UserId}.", result.SapResponseContent);
+            Assert.Equal($"Invoice/Sales Order could'n create to SAP because exists an error: 'Failed at generating billing request for the user: {sapTask.BillingRequest.UserId}.'.", result.SapResponseContent);
             Assert.Equal("Creating Billing Request", result.TaskName);
         }
 
@@ -319,7 +319,7 @@ namespace Doppler.Sap.Test
             var result = await handler.Handle(sapTask);
 
             Assert.False(result.IsSuccessful);
-            Assert.Equal($"Failed at updating billing request for the invoice: {sapTask.BillingRequest.InvoiceId}.", result.SapResponseContent);
+            Assert.Equal($"Invoice/Sales Order could'n create to SAP because exists an error: 'Failed at updating billing request for the invoice: {sapTask.BillingRequest.InvoiceId}.'.", result.SapResponseContent);
             Assert.Equal("Updating Billing Request", result.TaskName);
 
             sapServiceSettingsFactoryMock.Verify(x => x.CreateHandler(It.IsAny<string>()), Times.Once);
