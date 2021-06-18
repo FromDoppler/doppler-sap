@@ -12,12 +12,14 @@ namespace Doppler.Sap
         private readonly ILogger<TaskRepeater> _logger;
         private readonly IQueuingService _queuingService;
         private readonly ISapService _sapService;
+        private readonly ISlackService _slackService;
 
-        public TaskRepeater(ILogger<TaskRepeater> logger, IQueuingService queuingService, ISapService sapService)
+        public TaskRepeater(ILogger<TaskRepeater> logger, IQueuingService queuingService, ISapService sapService, ISlackService slackService)
         {
             _logger = logger;
             _queuingService = queuingService;
             _sapService = sapService;
+            _slackService = slackService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,13 +43,14 @@ namespace Doppler.Sap
                         }
                         else
                         {
-                            _logger.LogError(
-                                $"Failed at {sapServiceResponse.TaskName}, for Client Id {sapServiceResponse.IdUser}, SAP response was {sapServiceResponse.SapResponseContent}");
+                            _logger.LogError($"Failed at {sapServiceResponse.TaskName}, for Client Id {sapServiceResponse.IdUser}, SAP response was {sapServiceResponse.SapResponseContent}");
+                            await _slackService.SendNotification($"Failed at {sapServiceResponse.TaskName}, for Client Id {sapServiceResponse.IdUser}, SAP response was {sapServiceResponse.SapResponseContent}");
                         }
                     }
                     catch (Exception e)
                     {
                         _logger.LogError($"Unexpected error while sending data to Sap exception: {e.StackTrace}");
+                        await _slackService.SendNotification($"Unexpected error while sending data to Sap exception: {e.StackTrace}");
                     }
                 }
                 else
