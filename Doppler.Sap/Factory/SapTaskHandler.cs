@@ -101,8 +101,10 @@ namespace Doppler.Sap.Factory
             // Should throw error because if the business partner doesn't exists it returns an empty json.
             sapResponse.EnsureSuccessStatusCode();
 
+            var fiscalId = string.IsNullOrEmpty(cuit) ? null : cuit;
+
             var businessPartnersList = JsonConvert.DeserializeObject<SapBusinessPartnerList>(await sapResponse.Content.ReadAsStringAsync());
-            var businessPartner = businessPartnersList.value.FirstOrDefault(x => x.FederalTaxID == cuit);
+            var businessPartner = businessPartnersList.value.FirstOrDefault(x => x.FederalTaxID == fiscalId);
 
             if (businessPartner == null)
             {
