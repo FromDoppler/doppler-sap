@@ -46,12 +46,13 @@ namespace Doppler.Sap.Factory
             }
             catch (Exception ex)
             {
-                var exceptionMessage = $"Failed to create or update the Business Partner for the user: {(dequeuedTask.BusinessPartner.CardCode ?? string.Empty)}. Error: {ex.Message}";
+                var exceptionMessage = $"Failed to create or update the Business Partner for the user: {(dequeuedTask.BusinessPartner?.CardCode ?? string.Empty)}. Error: {ex.Message}";
 
                 _logger.LogError(ex, exceptionMessage);
                 return new SapTaskResult
                 {
                     IsSuccessful = false,
+                    IdUser = dequeuedTask.DopplerUser?.Id.ToString(),
                     SapResponseContent = exceptionMessage,
                     TaskName = "Create Or Update Business Partner"
                 };
@@ -69,6 +70,7 @@ namespace Doppler.Sap.Factory
             var taskResult = new SapTaskResult
             {
                 IsSuccessful = sapResponse.IsSuccessStatusCode,
+                IdUser = dequeuedTask.DopplerUser?.Id.ToString(),
                 SapResponseContent = await sapResponse.Content.ReadAsStringAsync(),
                 TaskName = "Creating Business Partner"
             };
@@ -93,6 +95,7 @@ namespace Doppler.Sap.Factory
             var taskResult = new SapTaskResult
             {
                 IsSuccessful = sapResponse.IsSuccessStatusCode,
+                IdUser = dequeuedTask.DopplerUser?.Id.ToString(),
                 SapResponseContent = await sapResponse.Content.ReadAsStringAsync(),
                 TaskName = "Updating Business Partner"
             };

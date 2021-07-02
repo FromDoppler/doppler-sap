@@ -155,6 +155,7 @@ namespace Doppler.Sap.Factory
                 return new SapTaskResult
                 {
                     IsSuccessful = false,
+                    IdUser = dequeuedTask.BillingRequest?.UserId.ToString(),
                     SapResponseContent = $"Failed at generating billing request for the user: {dequeuedTask.BillingRequest.UserId}.",
                     TaskName = "Creating Billing Request"
                 };
@@ -168,6 +169,7 @@ namespace Doppler.Sap.Factory
             return new SapTaskResult
             {
                 IsSuccessful = sapResponse.IsSuccessStatusCode,
+                IdUser = dequeuedTask.BillingRequest?.UserId.ToString(),
                 SapResponseContent = await sapResponse.Content.ReadAsStringAsync(),
                 TaskName = "Creating Billing Request"
             };
@@ -181,6 +183,7 @@ namespace Doppler.Sap.Factory
                 return new SapTaskResult
                 {
                     IsSuccessful = false,
+                    IdUser = dequeuedTask.BillingRequest?.UserId.ToString(),
                     SapResponseContent = $"Failed at updating billing request for the invoice: {dequeuedTask.BillingRequest.InvoiceId}.",
                     TaskName = "Updating Billing Request"
                 };
@@ -193,6 +196,7 @@ namespace Doppler.Sap.Factory
             var taskResult = new SapTaskResult
             {
                 IsSuccessful = sapResponse.IsSuccessStatusCode,
+                IdUser = dequeuedTask.BillingRequest?.UserId.ToString(),
                 SapResponseContent = await sapResponse.Content.ReadAsStringAsync(),
                 TaskName = "Updating Invoice"
             };

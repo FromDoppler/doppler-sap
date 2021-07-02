@@ -69,7 +69,8 @@ namespace Doppler.Sap.Factory
                     return new SapTaskResult
                     {
                         IsSuccessful = false,
-                        SapResponseContent = $"Credit Note could'n create to SAP because the invoice does not exist: '{dequeuedTask.CreditNoteRequest.InvoiceId}'.",
+                        IdUser = dequeuedTask.CreditNoteRequest?.ClientId.ToString(),
+                        SapResponseContent = $"Credit Note could'n create to SAP because the invoice does not exist: '{dequeuedTask.CreditNoteRequest?.InvoiceId}'.",
                         TaskName = "Creating Credit Note Request"
                     };
                 }
@@ -79,6 +80,7 @@ namespace Doppler.Sap.Factory
                 return new SapTaskResult
                 {
                     IsSuccessful = false,
+                    IdUser = dequeuedTask.CreditNoteRequest?.ClientId.ToString(),
                     SapResponseContent = ex.Message,
                     TaskName = "Creating Credit Note Request"
                 };
@@ -98,6 +100,7 @@ namespace Doppler.Sap.Factory
                     return new SapTaskResult
                     {
                         IsSuccessful = false,
+                        IdUser = dequeuedTask.CreditNoteRequest?.ClientId.ToString(),
                         SapResponseContent = $"Credit Note could'n update to SAP because the credit note does not exist: '{dequeuedTask.CreditNoteRequest.CreditNoteId}'.",
                         TaskName = "Updating Credit Note Request"
                     };
@@ -123,6 +126,7 @@ namespace Doppler.Sap.Factory
                 return new SapTaskResult
                 {
                     IsSuccessful = false,
+                    IdUser = dequeuedTask.CreditNoteRequest?.ClientId.ToString(),
                     SapResponseContent = ex.Message,
                     TaskName = "Updating Credit Note Request"
                 };
@@ -179,6 +183,7 @@ namespace Doppler.Sap.Factory
             return new SapTaskResult
             {
                 IsSuccessful = sapResponse.IsSuccessStatusCode,
+                IdUser = dequeuedTask.CreditNoteRequest?.ClientId.ToString(),
                 SapResponseContent = await sapResponse.Content.ReadAsStringAsync(),
                 TaskName = "Creating Credit Note Request"
             };
