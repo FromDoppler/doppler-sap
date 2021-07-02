@@ -35,7 +35,8 @@ namespace Doppler.Sap.Test
                 BillingCountryCode = "AR",
                 FederalTaxID = "27111111115",
                 PlanType = 1,
-                BillingSystemId = 9
+                BillingSystemId = 9,
+                FirstName = "FirstNameTest"
             };
 
             var requestContent = new StringContent(JsonConvert.SerializeObject(businessPartner), Encoding.UTF8, "application/json");
