@@ -68,7 +68,7 @@ namespace Doppler.Sap.Factory
                         IsSuccessful = false,
                         SapResponseContent = $"Invoice/Sales Order could'n create to SAP because exists an error: '{sapResponse.SapResponseContent}'.",
                         TaskName = dequeuedTask.TaskType == Enums.SapTaskEnum.BillingRequest ? "Creating Billing Request" : "Updating Billing Request",
-                        IdUser = dequeuedTask.BillingRequest.UserId.ToString()
+                        IdUser = dequeuedTask.BillingRequest?.UserId.ToString()
                     };
                 }
 
@@ -81,7 +81,7 @@ namespace Doppler.Sap.Factory
                     IsSuccessful = false,
                     SapResponseContent = ex.Message,
                     TaskName = "Creating Billing Request",
-                    IdUser = dequeuedTask.BillingRequest.UserId.ToString()
+                    IdUser = dequeuedTask.BillingRequest?.UserId.ToString()
                 };
             }
         }
@@ -114,6 +114,7 @@ namespace Doppler.Sap.Factory
             return new SapTaskResult
             {
                 IsSuccessful = sapResponse.IsSuccessStatusCode,
+                IdUser = response.CardCode,
                 SapResponseContent = await sapResponse.Content.ReadAsStringAsync(),
                 TaskName = "Creating/Updating Billing with Payment Request"
             };
