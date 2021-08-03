@@ -88,7 +88,7 @@ namespace Doppler.Sap.Factory
 
             var message = new HttpRequestMessage
             {
-                RequestUri = new Uri($"{_sapServiceConfig.BaseServerUrl}{_sapServiceConfig.BusinessPartnerConfig.Endpoint}?$filter=startswith(CardCode,'{incompleteCardCode}')"),
+                RequestUri = new Uri($"{_sapServiceConfig.BaseServerUrl}{_sapServiceConfig.BusinessPartnerConfig.Endpoint}?$filter=startswith(CardCode,'{incompleteCardCode}') and Frozen eq 'tNO'"),
                 Method = HttpMethod.Get
             };
 
