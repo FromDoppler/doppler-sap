@@ -3,11 +3,9 @@ using Doppler.Sap.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Doppler.Sap.Controllers
@@ -19,11 +17,16 @@ namespace Doppler.Sap.Controllers
     {
         private readonly ILogger<BusinessPartnerController> _logger;
         private readonly IBusinessPartnerService _businessPartnerService;
+        private readonly ISlackService _slackService;
 
-        public BusinessPartnerController(ILogger<BusinessPartnerController> logger, IBusinessPartnerService businessPartnerService)
+        public BusinessPartnerController(
+            ILogger<BusinessPartnerController> logger,
+            IBusinessPartnerService businessPartnerService,
+            ISlackService slackService)
         {
             _logger = logger;
             _businessPartnerService = businessPartnerService;
+            _slackService = slackService;
         }
 
         [HttpPost("CreateOrUpdateBusinessPartner")]
@@ -39,12 +42,16 @@ namespace Doppler.Sap.Controllers
             }
             catch (ValidationException e)
             {
-                _logger.LogError(e, $"Failed at creating/updating user: {dopplerUser.Id}. Because the user has a validation error: {e.Message}");
+                var messageError = $"Failed at creating/updating user: {dopplerUser.Id}. Because the user has a validation error: {e.Message}";
+                _logger.LogError(e, messageError);
+                await _slackService.SendNotification(messageError);
                 return new BadRequestObjectResult(e.Message);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Failed at creating/updating user: {dopplerUser.Id}, Object sent: {JsonConvert.SerializeObject(dopplerUser)} ");
+                var messageError = $"Failed at creating/updating user: {dopplerUser.Id}, Object sent: {JsonConvert.SerializeObject(dopplerUser)} ";
+                _logger.LogError(e, messageError);
+                await _slackService.SendNotification(messageError);
                 return new ObjectResult(new
                 {
                     StatusCode = 400,
