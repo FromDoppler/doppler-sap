@@ -20,7 +20,7 @@ namespace Doppler.Sap.Test.Controllers
             businessPartnerServiceMock.Setup(x => x.CreateOrUpdateBusinessPartner(It.IsAny<DopplerUserDto>()))
                 .Returns(Task.CompletedTask);
 
-            var controller = new BusinessPartnerController(loggerMock.Object, businessPartnerServiceMock.Object);
+            var controller = new BusinessPartnerController(loggerMock.Object, businessPartnerServiceMock.Object, Mock.Of<ISlackService>());
 
             // Act
             var response = await controller.CreateOrUpdateBusinessPartner(new DopplerUserDto
@@ -42,7 +42,7 @@ namespace Doppler.Sap.Test.Controllers
             var businessPartnerServiceMock = new Mock<IBusinessPartnerService>();
             businessPartnerServiceMock.Setup(x => x.CreateOrUpdateBusinessPartner(It.IsAny<DopplerUserDto>())).Throws(new ValidationException("Invalid billing country value."));
 
-            var controller = new BusinessPartnerController(loggerMock.Object, businessPartnerServiceMock.Object);
+            var controller = new BusinessPartnerController(loggerMock.Object, businessPartnerServiceMock.Object, Mock.Of<ISlackService>());
 
             // Act
             var response = await controller.CreateOrUpdateBusinessPartner(new DopplerUserDto
@@ -64,7 +64,7 @@ namespace Doppler.Sap.Test.Controllers
             var businessPartnerServiceMock = new Mock<IBusinessPartnerService>();
             businessPartnerServiceMock.Setup(x => x.CreateOrUpdateBusinessPartner(It.IsAny<DopplerUserDto>())).Throws(new ValidationException("Invalid cuit value."));
 
-            var controller = new BusinessPartnerController(loggerMock.Object, businessPartnerServiceMock.Object);
+            var controller = new BusinessPartnerController(loggerMock.Object, businessPartnerServiceMock.Object, Mock.Of<ISlackService>());
 
             // Act
             var response = await controller.CreateOrUpdateBusinessPartner(new DopplerUserDto
@@ -86,7 +86,7 @@ namespace Doppler.Sap.Test.Controllers
             var businessPartnerServiceMock = new Mock<IBusinessPartnerService>();
             businessPartnerServiceMock.Setup(x => x.CreateOrUpdateBusinessPartner(It.IsAny<DopplerUserDto>())).Throws(new ValidationException("Invalid plan type value."));
 
-            var controller = new BusinessPartnerController(loggerMock.Object, businessPartnerServiceMock.Object);
+            var controller = new BusinessPartnerController(loggerMock.Object, businessPartnerServiceMock.Object, Mock.Of<ISlackService>());
 
             // Act
             var response = await controller.CreateOrUpdateBusinessPartner(new DopplerUserDto
@@ -107,7 +107,7 @@ namespace Doppler.Sap.Test.Controllers
             var businessPartnerServiceMock = new Mock<IBusinessPartnerService>();
             businessPartnerServiceMock.Setup(x => x.CreateOrUpdateBusinessPartner(It.IsAny<DopplerUserDto>())).Throws(new ValidationException("Invalid first name or last name."));
 
-            var controller = new BusinessPartnerController(loggerMock.Object, businessPartnerServiceMock.Object);
+            var controller = new BusinessPartnerController(loggerMock.Object, businessPartnerServiceMock.Object, Mock.Of<ISlackService>());
 
             // Act
             var response = await controller.CreateOrUpdateBusinessPartner(new DopplerUserDto
