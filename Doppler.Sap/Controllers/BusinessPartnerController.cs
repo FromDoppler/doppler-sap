@@ -33,6 +33,7 @@ namespace Doppler.Sap.Controllers
         public async Task<IActionResult> CreateOrUpdateBusinessPartner([FromBody] DopplerUserDto dopplerUser)
         {
             _logger.LogInformation($"Received user: {dopplerUser.Email}");
+            _logger.LogInformation($"Json request: {JsonConvert.SerializeObject(dopplerUser)}");
 
             try
             {

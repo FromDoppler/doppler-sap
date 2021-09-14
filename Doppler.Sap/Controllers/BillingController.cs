@@ -5,6 +5,7 @@ using Doppler.Sap.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Doppler.Sap.Controllers
@@ -27,6 +28,7 @@ namespace Doppler.Sap.Controllers
         public async Task<IActionResult> SetCurrencyRate([FromBody] List<CurrencyRateDto> currencyRate)
         {
             _logger.LogDebug("Setting currency date.");
+            _logger.LogInformation($"Json request: {JsonConvert.SerializeObject(currencyRate)}");
 
             await _billingService.SendCurrencyToSap(currencyRate);
 
@@ -37,6 +39,7 @@ namespace Doppler.Sap.Controllers
         public async Task<IActionResult> CreateBillingRequest([FromBody] List<BillingRequest> billingRequest)
         {
             _logger.LogDebug("Creating Billing request.");
+            _logger.LogInformation($"Json request: {JsonConvert.SerializeObject(billingRequest)}");
 
             await _billingService.CreateBillingRequest(billingRequest);
 
@@ -47,6 +50,7 @@ namespace Doppler.Sap.Controllers
         public async Task<IActionResult> UpdatePaymentStatus([FromBody] UpdatePaymentStatusRequest updatePaymentStatusRequest)
         {
             _logger.LogDebug("Updating Billing request.");
+            _logger.LogInformation($"Json request: {JsonConvert.SerializeObject(updatePaymentStatusRequest)}");
 
             await _billingService.UpdatePaymentStatus(updatePaymentStatusRequest);
 
@@ -57,6 +61,7 @@ namespace Doppler.Sap.Controllers
         public async Task<IActionResult> CreateCreditNote([FromBody] CreditNoteRequest creditNoteRequest)
         {
             _logger.LogDebug("Creating Credit Note");
+            _logger.LogInformation($"Json request: {JsonConvert.SerializeObject(creditNoteRequest)}");
 
             await _billingService.CreateCreditNote(creditNoteRequest);
 
@@ -67,6 +72,7 @@ namespace Doppler.Sap.Controllers
         public async Task<IActionResult> UpdateCreditNotePaymentStatus([FromBody] UpdateCreditNotePaymentStatusRequest updatePaymentStatusRequest)
         {
             _logger.LogDebug("Updating Credit Note Payment Status request.");
+            _logger.LogInformation($"Json request: {JsonConvert.SerializeObject(updatePaymentStatusRequest)}");
 
             await _billingService.UpdateCreditNotePaymentStatus(updatePaymentStatusRequest);
 
@@ -77,6 +83,7 @@ namespace Doppler.Sap.Controllers
         public async Task<IActionResult> CancelCreditNote([FromBody] CancelCreditNoteRequest cancelCreditNoteRequest)
         {
             _logger.LogDebug("Canceling Credit Note.");
+            _logger.LogInformation($"Json request: {JsonConvert.SerializeObject(cancelCreditNoteRequest)}");
 
             await _billingService.CancelCreditNote(cancelCreditNoteRequest);
 
@@ -86,6 +93,8 @@ namespace Doppler.Sap.Controllers
         [HttpGet("{billingSystemId}/Invoices/{dopplerInvoiceId}/{origin?}")]
         public async Task<InvoiceResponse> GetInvoiveByDopplerInvoiceId([FromRoute] int billingSystemId, [FromRoute] int dopplerInvoiceId, [FromRoute] string origin = "doppler")
         {
+            _logger.LogDebug("Getting invoiceId by Doppler.");
+            _logger.LogInformation($"Json request: {dopplerInvoiceId}");
             return await _billingService.GetInvoiceByDopplerInvoiceIdAndOrigin(billingSystemId, dopplerInvoiceId, origin);
         }
     }
