@@ -211,6 +211,11 @@
         "ItemCode": "1.5.10",
         "SubscriberQty": 200000,
         "description": "Up to 200.000 contacts"
+      },
+      {
+        "ItemCode": "1.5.11",
+        "SubscriberQty": 500,
+        "description": "Up to 500 contacts"
       }
     ]
   },
