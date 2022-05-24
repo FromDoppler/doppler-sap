@@ -80,7 +80,7 @@ namespace Doppler.Sap.Mappers.Billing
                     Payment = billingRequest.Periodicity != null ? $"Abono {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
                 };
 
-                planItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                planItem.FreeText = "Doppler - " + string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
 
                 sapSaleOrder.DocumentLines.Add(planItem);
             }
