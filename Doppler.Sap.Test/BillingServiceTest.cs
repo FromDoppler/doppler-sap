@@ -677,7 +677,7 @@ namespace Doppler.Sap.Test
             await billingService.CreateBillingRequest(billingRequestList);
 
             queuingServiceMock.Verify(x => x.AddToTaskQueue(
-                    It.Is<SapTask>(y => y.BillingRequest.DocumentLines.FirstOrDefault().FreeText == "USD 15 + IMP")),
+                    It.Is<SapTask>(y => y.BillingRequest.DocumentLines.FirstOrDefault().FreeText == "Doppler - USD 15 + IMP")),
                 Times.Once);
         }
 
@@ -780,7 +780,7 @@ namespace Doppler.Sap.Test
             // Assert
             queuingServiceMock.Verify(x => x.AddToTaskQueue(
                     It.Is<SapTask>(y => y.BillingRequest.DocumentLines.FirstOrDefault()
-                        .FreeText == "USD 15 + IMP - Plan Mensual - Abono 00 0")),
+                        .FreeText == "Doppler - USD 15 + IMP - Plan Mensual - Abono 00 0")),
                 Times.Once);
         }
 
