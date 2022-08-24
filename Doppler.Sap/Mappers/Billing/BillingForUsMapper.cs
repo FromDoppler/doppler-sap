@@ -115,7 +115,14 @@ namespace Doppler.Sap.Mappers.Billing
                     Payment = billingRequest.Periodicity != null ? $"Period {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
                 };
 
-                planItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                if (!billingRequest.IsUpSelling)
+                {
+                    planItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                }
+                else
+                {
+                    planItem.FreeText = $"Difference due to change of plan - {_currencyCode} {(billingRequest.DiscountedAmount.HasValue ? billingRequest.DiscountedAmount.Value.ToString(CultureInfo.CurrentCulture) : billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture))}";
+                }
 
                 sapSaleOrder.DocumentLines.Add(planItem);
             }

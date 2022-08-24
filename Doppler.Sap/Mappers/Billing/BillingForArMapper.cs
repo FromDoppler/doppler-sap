@@ -80,7 +80,14 @@ namespace Doppler.Sap.Mappers.Billing
                     Payment = billingRequest.Periodicity != null ? $"Abono {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
                 };
 
-                planItem.FreeText = "Doppler - " + string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                if (!billingRequest.IsUpSelling)
+                {
+                    planItem.FreeText = "Doppler - " + string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                }
+                else
+                {
+                    planItem.FreeText = $"Doppler - Diferencia por cambio de plan - {currencyCode} {(billingRequest.DiscountedAmount.HasValue ? billingRequest.DiscountedAmount.Value.ToString(CultureInfo.CurrentCulture) : billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture))} + IMP";
+                }
 
                 sapSaleOrder.DocumentLines.Add(planItem);
             }
