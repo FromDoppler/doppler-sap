@@ -467,5 +467,15 @@
         "description": "IP dedicada"
       }
     ]
+  },
+  {
+    "Plantype": 6, //SMS
+    "PlanDescription": [
+      {
+        "ItemCode": "1.1.1",
+        "emailsQty": 0,
+        "description": "SMS"
+      }
+    ]
   }
 ]

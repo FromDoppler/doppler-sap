@@ -11,7 +11,8 @@ namespace Doppler.Sap.Mappers
             {2, "CD"},
             {3, "CD"},
             {4, "CD"},
-            {5, "CR"}
+            {5, "CR"},
+            {6, "CD"},
         };
 
         public static readonly Dictionary<int?, string> CurrencyDictionary = new Dictionary<int?, string>

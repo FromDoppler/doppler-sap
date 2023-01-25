@@ -82,7 +82,14 @@ namespace Doppler.Sap.Mappers.Billing
 
                 if (!billingRequest.IsUpSelling)
                 {
-                    planItem.FreeText = "Doppler - " + string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                    if (billingRequest.PlanType != 6)
+                    {
+                        planItem.FreeText = "Doppler - " + string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+                    else
+                    {
+                        planItem.FreeText = $"Doppler - Compra de créditos SMS - {currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)} + IMP";
+                    }
                 }
                 else
                 {
