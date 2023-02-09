@@ -52,7 +52,6 @@ namespace Doppler.Sap.Controllers
             {
                 var messageError = $"Failed at creating/updating user: {dopplerUser.Id}, Object sent: {JsonConvert.SerializeObject(dopplerUser)} ";
                 _logger.LogError(e, messageError);
-                await _slackService.SendNotification(messageError);
                 return new ObjectResult(new
                 {
                     StatusCode = 400,
