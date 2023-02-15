@@ -123,7 +123,7 @@ namespace Doppler.Sap.Mappers.Billing
                     }
                     else
                     {
-                        planItem.FreeText = $"Doppler - Buy SMS Credits - { _currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}";
+                        planItem.FreeText = $"Doppler - Buy SMS Credits - {_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}";
                     }
                 }
                 else

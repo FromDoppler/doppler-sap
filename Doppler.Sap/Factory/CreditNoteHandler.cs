@@ -81,7 +81,7 @@ namespace Doppler.Sap.Factory
                 {
                     IsSuccessful = false,
                     IdUser = dequeuedTask.CreditNoteRequest?.ClientId.ToString(),
-                    SapResponseContent = $"Error creating Credit Note for Invoice Id: '{ dequeuedTask.CreditNoteRequest.InvoiceId }'. Message: '{ ex.Message}'",
+                    SapResponseContent = $"Error creating Credit Note for Invoice Id: '{dequeuedTask.CreditNoteRequest.InvoiceId}'. Message: '{ex.Message}'",
                     TaskName = "Creating Credit Note Request"
                 };
             }
@@ -127,7 +127,7 @@ namespace Doppler.Sap.Factory
                 {
                     IsSuccessful = false,
                     IdUser = dequeuedTask.CreditNoteRequest?.ClientId.ToString(),
-                    SapResponseContent = $"Error updating Credit Note: '{ dequeuedTask.CreditNoteRequest.CreditNoteId }'. Message: '{ ex.Message }'",
+                    SapResponseContent = $"Error updating Credit Note: '{dequeuedTask.CreditNoteRequest.CreditNoteId}'. Message: '{ex.Message}'",
                     TaskName = "Updating Credit Note Request"
                 };
             }
@@ -164,7 +164,7 @@ namespace Doppler.Sap.Factory
                 return new SapTaskResult
                 {
                     IsSuccessful = false,
-                    SapResponseContent = $"Error canceling Credit Note: '{ dequeuedTask.CancelCreditNoteRequest.CreditNoteId }'. Message: '{ ex.Message}'",
+                    SapResponseContent = $"Error canceling Credit Note: '{dequeuedTask.CancelCreditNoteRequest.CreditNoteId}'. Message: '{ex.Message}'",
                     TaskName = "Canceling Credit Note Request"
                 };
             }
