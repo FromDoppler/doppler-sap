@@ -901,14 +901,11 @@ namespace Doppler.Sap.Test
 
 
             // Assert
-            var uriForCreateCreditNote = sapConfig.SapServiceConfigsBySystem["AR"].BaseServerUrl + sapConfig.SapServiceConfigsBySystem["AR"].BillingConfig.CreditNotesEndpoint;
+            var uriForCreateCreditNote = sapConfig.SapServiceConfigsBySystem["AR"].BaseServerUrl + string.Format(sapConfig.SapServiceConfigsBySystem["AR"].BillingConfig.CreditNotesEndpoint, 0);
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
                 ItExpr.Is<HttpRequestMessage>(
                     req => req.Method == HttpMethod.Post
-                            && req.RequestUri == new Uri(uriForCreateCreditNote)
-                            && req.Content.ReadAsStringAsync().Result.Contains("\"DocDate\":\"2051-02-03\"")
-                            && JsonConvert.DeserializeObject<SapCreditNoteModel>(req.Content.ReadAsStringAsync().Result).DocumentLines.First().ReturnReason == -1
-                            && JsonConvert.DeserializeObject<SapCreditNoteModel>(req.Content.ReadAsStringAsync().Result).DocumentLines.Last().ReturnReason == -1),
+                            && req.RequestUri == new Uri(uriForCreateCreditNote)),
             ItExpr.IsAny<CancellationToken>());
         }
 
@@ -976,7 +973,7 @@ namespace Doppler.Sap.Test
                             },
                             BillingConfig = new BillingConfig
                             {
-                                CreditNotesEndpoint = "CreditNotes"
+                                CreditNotesEndpoint = "Orders({0})/Cancel"
                             }
                         }
                     }
@@ -1011,12 +1008,11 @@ namespace Doppler.Sap.Test
 
 
             // Assert
-            var uriForCreateCreditNote = sapConfig.SapServiceConfigsBySystem["AR"].BaseServerUrl + sapConfig.SapServiceConfigsBySystem["AR"].BillingConfig.CreditNotesEndpoint;
+            var uriForCreateCreditNote = sapConfig.SapServiceConfigsBySystem["AR"].BaseServerUrl + string.Format(sapConfig.SapServiceConfigsBySystem["AR"].BillingConfig.CreditNotesEndpoint, 0);
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
                 ItExpr.Is<HttpRequestMessage>(
                     req => req.Method == HttpMethod.Post
-                            && req.RequestUri == new Uri(uriForCreateCreditNote)
-                            && req.Content.ReadAsStringAsync().Result.Contains("\"ReturnReason\":-1")),
+                            && req.RequestUri == new Uri(uriForCreateCreditNote)),
             ItExpr.IsAny<CancellationToken>());
         }
 

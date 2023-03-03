@@ -172,13 +172,23 @@ namespace Doppler.Sap.Factory
 
         private async Task<SapTaskResult> CreateCreditNote(SapSaleOrderInvoiceResponse sapSaleOrderInvoiceResponse, SapTask dequeuedTask, string sapSystem)
         {
+            HttpResponseMessage sapResponse;
 
-            var sapCreditNote = GetMapper(sapSystem).MapToSapCreditNote(sapSaleOrderInvoiceResponse, dequeuedTask.CreditNoteRequest);
-            sapCreditNote.BillingSystemId = dequeuedTask.CreditNoteRequest.BillingSystemId;
+            if (sapSystem != "AR")
+            {
+                var sapCreditNote = GetMapper(sapSystem).MapToSapCreditNote(sapSaleOrderInvoiceResponse, dequeuedTask.CreditNoteRequest);
+                sapCreditNote.BillingSystemId = dequeuedTask.CreditNoteRequest.BillingSystemId;
 
-            var serviceSetting = SapServiceSettings.GetSettings(_sapConfig, sapSystem);
-            var uriString = $"{serviceSetting.BaseServerUrl}{serviceSetting.BillingConfig.CreditNotesEndpoint}";
-            var sapResponse = await SendMessage(sapCreditNote, sapSystem, uriString, HttpMethod.Post);
+                var serviceSetting = SapServiceSettings.GetSettings(_sapConfig, sapSystem);
+                var uriString = $"{serviceSetting.BaseServerUrl}{serviceSetting.BillingConfig.CreditNotesEndpoint}";
+                sapResponse = await SendMessage(sapCreditNote, sapSystem, uriString, HttpMethod.Post);
+            }
+            else
+            {
+                var serviceSetting = SapServiceSettings.GetSettings(_sapConfig, sapSystem);
+                var uriString = $"{serviceSetting.BaseServerUrl}{string.Format(serviceSetting.BillingConfig.CreditNotesEndpoint, sapSaleOrderInvoiceResponse.DocEntry)}";
+                sapResponse = await SendMessage(null, sapSystem, uriString, HttpMethod.Post);
+            }
 
             return new SapTaskResult
             {
