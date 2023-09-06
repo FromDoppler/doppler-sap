@@ -8,5 +8,6 @@ namespace Doppler.Sap.Models
         public bool? SurplusEmails { get; set; }
         public bool? CustomPlan { get; set; }
         public int? SubscriberQty { get; set; }
+        public int? ConversationQty { get; set; }
     }
 }
