@@ -507,5 +507,28 @@
         "description": "Custom made Chat Plan"
       }
     ]
+  },
+  {
+    "Plantype": 9,
+    "PlanDescription": [
+      {
+        "ItemCode": "4.1.1",
+        "PackQty": 5,
+        "PackId": 1,
+        "description": "Pack DL hasta 5"
+      },
+      {
+        "ItemCode": "4.1.2",
+        "PackQty": 25,
+        "PackId": 2,
+        "description": "Pack DL hasta 25"
+      },
+      {
+        "ItemCode": "4.1.3",
+        "PackQty": 50,
+        "PackId": 3,
+        "description": "Pack DL hasta 50"
+      }
+    ]
   }
 ]

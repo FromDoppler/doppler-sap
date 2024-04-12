@@ -168,48 +168,78 @@ namespace Doppler.Sap.Mappers.Billing
             {
                 foreach (var additionalService in billingRequest.AdditionalServices)
                 {
-                    var additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.ConversationQty == additionalService.ConversationQty)
-                        .Select(x => x.ItemCode)
-                        .FirstOrDefault();
-
-                    var additionalServiceItem = new SapDocumentLineModel
+                    if (additionalService.Type == AdditionalServiceTypeEnum.Landing)
                     {
-                        TaxCode = _defaultTaxCode,
-                        ItemCode = additionalServiceItemCode,
-                        UnitPrice = additionalService.Charge,
-                        Currency = _currencyCode,
-                        DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : billingRequest.Discount ?? 0,
-                        CostingCode = _costingCode1,
-                        CostingCode2 = _costingCode2,
-                        CostingCode3 = _costingCode3,
-                        CostingCode4 = _costingCode4
-                    };
+                        var packs = additionalService.Packs;
 
-                    var freeText = new
-                    {
-                        Amount = $"{_currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}",
-                        Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} Chat Plan " : null,
-                        Discount = billingRequest.Discount > 0 ? $"{billingRequest.Discount}% OFF" : null,
-                        Payment = billingRequest.Periodicity != null ? $"Period {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
-                    };
-
-                    if (!billingRequest.IsUpSelling)
-                    {
-                        if (additionalService.Type == AdditionalServiceTypeEnum.Chat)
+                        foreach (var pack in packs)
                         {
-                            additionalServiceItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
-                        }
-                        else if (additionalService.Type == AdditionalServiceTypeEnum.Whatsapp)
-                        {
-                            additionalServiceItem.FreeText = $"Doppler - Buy WPP Credits - {_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}";
+                            var landingPackItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.PackId == pack.PackId).FirstOrDefault();
+
+                            var landingPackItem = new SapDocumentLineModel
+                            {
+                                TaxCode = _defaultTaxCode,
+                                ItemCode = landingPackItemCode.ItemCode,
+                                Quantity = pack.Quantity,
+                                UnitPrice = (double)pack.Amount,
+                                Currency = _currencyCode,
+                                DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : billingRequest.Discount ?? 0,
+                                CostingCode = _costingCode1,
+                                CostingCode2 = _costingCode2,
+                                CostingCode3 = _costingCode3,
+                                CostingCode4 = _costingCode4
+                            };
+
+                            landingPackItem.FreeText = $"Pack DL hasta {landingPackItemCode.PackQty}";
+
+                            sapSaleOrder.DocumentLines.Add(landingPackItem);
                         }
                     }
                     else
                     {
-                        additionalServiceItem.FreeText = $"Difference due to change of chat plan - {_currencyCode} {(billingRequest.DiscountedAmount.HasValue ? billingRequest.DiscountedAmount.Value.ToString(CultureInfo.CurrentCulture) : billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture))}";
-                    }
+                        var additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.ConversationQty == additionalService.ConversationQty)
+                            .Select(x => x.ItemCode)
+                            .FirstOrDefault();
 
-                    sapSaleOrder.DocumentLines.Add(additionalServiceItem);
+                        var additionalServiceItem = new SapDocumentLineModel
+                        {
+                            TaxCode = _defaultTaxCode,
+                            ItemCode = additionalServiceItemCode,
+                            UnitPrice = additionalService.Charge,
+                            Currency = _currencyCode,
+                            DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : billingRequest.Discount ?? 0,
+                            CostingCode = _costingCode1,
+                            CostingCode2 = _costingCode2,
+                            CostingCode3 = _costingCode3,
+                            CostingCode4 = _costingCode4
+                        };
+
+                        var freeText = new
+                        {
+                            Amount = $"{_currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}",
+                            Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} Chat Plan " : null,
+                            Discount = billingRequest.Discount > 0 ? $"{billingRequest.Discount}% OFF" : null,
+                            Payment = billingRequest.Periodicity != null ? $"Period {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
+                        };
+
+                        if (!billingRequest.IsUpSelling)
+                        {
+                            if (additionalService.Type == AdditionalServiceTypeEnum.Chat)
+                            {
+                                additionalServiceItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                            }
+                            else if (additionalService.Type == AdditionalServiceTypeEnum.Whatsapp)
+                            {
+                                additionalServiceItem.FreeText = $"Doppler - Buy WPP Credits - {_currencyCode} {billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture)}";
+                            }
+                        }
+                        else
+                        {
+                            additionalServiceItem.FreeText = $"Difference due to change of chat plan - {_currencyCode} {(billingRequest.DiscountedAmount.HasValue ? billingRequest.DiscountedAmount.Value.ToString(CultureInfo.CurrentCulture) : billingRequest.PlanFee.ToString(CultureInfo.CurrentCulture))}";
+                        }
+
+                        sapSaleOrder.DocumentLines.Add(additionalServiceItem);
+                    }
                 }
             }
 

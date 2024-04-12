@@ -9,5 +9,7 @@ namespace Doppler.Sap.Models
         public bool? CustomPlan { get; set; }
         public int? SubscriberQty { get; set; }
         public int? ConversationQty { get; set; }
+        public int? PackId { get; set; }
+        public int? PackQty { get; set; }
     }
 }
