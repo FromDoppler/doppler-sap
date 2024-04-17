@@ -183,14 +183,20 @@ namespace Doppler.Sap.Mappers.Billing
                                 Quantity = pack.Quantity,
                                 UnitPrice = (double)pack.Amount,
                                 Currency = _currencyCode,
-                                DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : billingRequest.Discount ?? 0,
+                                DiscountPercent = billingRequest.Discount,
                                 CostingCode = _costingCode1,
                                 CostingCode2 = _costingCode2,
                                 CostingCode3 = _costingCode3,
                                 CostingCode4 = _costingCode4
                             };
 
-                            landingPackItem.FreeText = $"Pack DL hasta {landingPackItemCode.PackQty}";
+                            var freeText = new
+                            {
+                                Description = $"Pack DL hasta {landingPackItemCode.PackQty}",
+                                Discount = billingRequest.Discount > 0 ? $"{billingRequest.Discount}% OFF" : null
+                            };
+
+                            landingPackItem.FreeText = string.Join(" - ", new string[] { freeText.Description, freeText.Discount }.Where(s => !string.IsNullOrEmpty(s)));
 
                             sapSaleOrder.DocumentLines.Add(landingPackItem);
                         }
