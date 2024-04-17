@@ -154,8 +154,13 @@ namespace Doppler.Sap.Mappers.Billing
                                 CostingCode4 = _costingCode4
                             };
 
-                            landingPackItem.FreeText = $"DL Pack up to {landingPackItemCode.PackQty}";
+                            var freeText = new
+                            {
+                                Description = $"Pack DL hasta {landingPackItemCode.PackQty}",
+                                Discount = billingRequest.Discount > 0 ? $"{billingRequest.Discount}% OFF" : null
+                            };
 
+                            landingPackItem.FreeText = string.Join(" - ", new string[] { freeText.Description, freeText.Discount }.Where(s => !string.IsNullOrEmpty(s)));
                             sapSaleOrder.DocumentLines.Add(landingPackItem);
                         }
                     }
