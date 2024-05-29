@@ -147,7 +147,7 @@ namespace Doppler.Sap.Mappers.Billing
                                 Quantity = pack.Quantity,
                                 UnitPrice = (double)pack.Amount,
                                 Currency = currencyCode,
-                                DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : billingRequest.Discount ?? 0,
+                                DiscountPercent = additionalService.Discount ?? 0,
                                 CostingCode = _costingCode1,
                                 CostingCode2 = _costingCode2,
                                 CostingCode3 = _costingCode3,
