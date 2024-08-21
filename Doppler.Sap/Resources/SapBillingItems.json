@@ -482,29 +482,37 @@
     "Plantype": 7, //Chat
     "PlanDescription": [
       {
-        "ItemCode": "2.11.1",
+        "ItemCode": "4.2.1",
+        "conversationQty": 500,
+        "description": "Pack DC hasta 500"
+      },
+      {
+        "ItemCode": "4.2.2",
         "conversationQty": 1000,
-        "description": "Up to 1000 converstaions"
+        "description": "Pack DC hasta 1000"
       },
       {
-        "ItemCode": "2.11.2",
-        "conversationQty": 3500,
-        "description": "Up to 3500 converstaions"
+        "ItemCode": "4.2.3",
+        "conversationQty": 2000,
+        "description": "Pack DC hasta 2000"
       },
       {
-        "ItemCode": "2.11.3",
-        "conversationQty": 5000,
-        "description": "Up to 5000 converstaions"
-      },
-      {
-        "ItemCode": "2.11.4",
-        "conversationQty": 10000,
-        "description": "Up to 10000 converstaions"
-      },
-      {
-        "ItemCode": "2.11.5",
+        "ItemCode": "4.2.4",
         "CustomPlan": true,
-        "description": "Custom made Chat Plan"
+        "description": "Pack DC Custom"
+      },
+      {
+        "ItemCode": "4.2.5",
+        "description": "DC agentes adicionales"
+      },
+      {
+        "ItemCode": "4.2.6",
+        "description": "DC canales adicionales"
+      },
+      {
+        "ItemCode": "4.2.6",
+        "SurplusEmails": true,
+        "description": "DC excedentes"
       }
     ]
   },
