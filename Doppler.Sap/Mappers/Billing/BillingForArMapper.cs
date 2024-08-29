@@ -55,7 +55,7 @@ namespace Doppler.Sap.Mappers.Billing
 
             var itemCode = _sapBillingItemsService.GetItemCode(billingRequest.PlanType, billingRequest.CreditsOrSubscribersQuantity, billingRequest.IsCustomPlan);
 
-            var amount = billingRequest.DiscountedAmount.HasValue ? billingRequest.DiscountedAmount.Value : billingRequest.PlanFee;
+            var amount = billingRequest.DiscountedAmount.HasValue && billingRequest.DiscountedAmount.Value > 0 ? billingRequest.DiscountedAmount.Value : billingRequest.PlanFee;
 
             if (amount > 0)
             {
