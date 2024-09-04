@@ -202,6 +202,34 @@ namespace Doppler.Sap.Mappers.Billing
                             }
 
                             sapSaleOrder.DocumentLines.Add(additionalServiceItem);
+
+                            if (additionalService.ExtraQty > 0)
+                            {
+                                var itemCodeSurplus = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.SurplusEmails.HasValue && x.SurplusEmails.Value)
+                                    .Select(x => x.ItemCode)
+                                    .FirstOrDefault();
+
+                                var extraConversationsItem = new SapDocumentLineModel
+                                {
+                                    ItemCode = itemCodeSurplus,
+                                    UnitPrice = additionalService.ExtraFee,
+                                    Currency = currencyCode,
+                                    FreeText = $"Doppler - Conversaciones excedentes {additionalService.ExtraQty}",
+                                    CostingCode = _costingCode1,
+                                    CostingCode2 = _costingCode2,
+                                    CostingCode3 = _costingCode3,
+                                    CostingCode4 = _costingCode4
+                                };
+
+                                if (additionalService.ExtraFee > 0)
+                                {
+                                    extraConversationsItem.FreeText += $" - {currencyCode} {additionalService.ExtraFeePerUnit} + IMP";
+                                }
+
+                                extraConversationsItem.FreeText += $" - Período {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}";
+
+                                sapSaleOrder.DocumentLines.Add(extraConversationsItem);
+                            }
                         }
                     }
                 }

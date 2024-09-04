@@ -510,7 +510,7 @@
         "description": "DC canales adicionales"
       },
       {
-        "ItemCode": "4.2.6",
+        "ItemCode": "4.2.7",
         "SurplusEmails": true,
         "description": "DC excedentes"
       }
