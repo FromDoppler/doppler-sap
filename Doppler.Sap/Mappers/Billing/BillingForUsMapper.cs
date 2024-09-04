@@ -240,6 +240,36 @@ namespace Doppler.Sap.Mappers.Billing
                             }
 
                             sapSaleOrder.DocumentLines.Add(additionalServiceItem);
+
+                            if (additionalService.ExtraQty > 0)
+                            {
+                                var itemCodeSurplus = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.SurplusEmails.HasValue && x.SurplusEmails.Value)
+                                    .Select(x => x.ItemCode)
+                                    .FirstOrDefault();
+
+                                var extraConversationsItem = new SapDocumentLineModel
+                                {
+                                    ItemCode = itemCodeSurplus,
+                                    UnitPrice = additionalService.ExtraFee,
+                                    Currency = _currencyCode,
+                                    FreeText = $"Conversation surplus: {additionalService.ExtraQty}",
+                                    CostingCode = _costingCode1,
+                                    CostingCode2 = _costingCode2,
+                                    CostingCode3 = _costingCode3,
+                                    CostingCode4 = _costingCode4
+                                };
+
+                                var extraConversationsFreeText = new
+                                {
+                                    ExcessEmails = $"Conversation surplus: {additionalService.ExtraQty}.",
+                                    Amount = additionalService.ExtraFee > 0 ? $"{_currencyCode}{additionalService.ExtraFeePerUnit}" : null,
+                                    Period = $"Period {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}"
+                                };
+
+                                extraConversationsItem.FreeText = string.Join(" - ", new string[] { extraConversationsFreeText.ExcessEmails, extraConversationsFreeText.Amount, extraConversationsFreeText.Period }.Where(s => !string.IsNullOrEmpty(s)));
+
+                                sapSaleOrder.DocumentLines.Add(extraConversationsItem);
+                            }
                         }
                     }
                 }
