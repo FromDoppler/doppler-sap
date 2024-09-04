@@ -249,6 +249,7 @@ namespace Doppler.Sap.Mappers.Billing
 
                                 var extraConversationsItem = new SapDocumentLineModel
                                 {
+                                    TaxCode = _defaultTaxCode,
                                     ItemCode = itemCodeSurplus,
                                     UnitPrice = additionalService.ExtraFee,
                                     Currency = _currencyCode,
@@ -261,7 +262,7 @@ namespace Doppler.Sap.Mappers.Billing
 
                                 var extraConversationsFreeText = new
                                 {
-                                    ExcessEmails = $"Conversation surplus: {additionalService.ExtraQty}.",
+                                    ExcessEmails = $"Conversation surplus: {additionalService.ExtraQty}",
                                     Amount = additionalService.ExtraFee > 0 ? $"{_currencyCode}{additionalService.ExtraFeePerUnit}" : null,
                                     Period = $"Period {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}"
                                 };
