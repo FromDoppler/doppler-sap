@@ -187,14 +187,14 @@ namespace Doppler.Sap.Mappers.Billing
                             var freeText = new
                             {
                                 Amount = $"{currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)} + IMP",
-                                Periodicity = billingRequest.Periodicity != null ? $"Plan {(Dictionary.PeriodicityDictionary.TryGetValue(billingRequest.Periodicity, out var outPeriodicity) ? outPeriodicity : string.Empty)} Conversation Plan " : null,
+                                Periodicity = billingRequest.Periodicity != null ? $"Conversaciones Plan {(Dictionary.PeriodicityDictionary.TryGetValue(billingRequest.Periodicity, out var outPeriodicity) ? outPeriodicity : string.Empty)}" : null,
                                 Discount = additionalService.Discount > 0 ? $"Descuento {additionalService.Discount}%" : null,
                                 Payment = billingRequest.Periodicity != null ? $"Abono {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
                             };
 
                             if (!additionalService.IsUpSelling)
                             {
-                                additionalServiceItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                                additionalServiceItem.FreeText = "Doppler - " + string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
                             }
                             else
                             {
