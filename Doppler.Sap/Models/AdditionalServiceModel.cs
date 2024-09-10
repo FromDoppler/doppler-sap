@@ -7,6 +7,7 @@ namespace Doppler.Sap.Models
     {
         public int? ConversationQty { get; set; }
         public double Charge { get; set; }
+        public double PlanFee { get; set; }
         public int? Discount { get; set; }
         public bool IsUpSelling { get; set; }
         public IList<Pack> Packs { get; set; }
