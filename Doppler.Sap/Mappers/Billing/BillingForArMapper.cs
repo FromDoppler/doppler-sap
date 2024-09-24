@@ -156,7 +156,7 @@ namespace Doppler.Sap.Mappers.Billing
 
                             var freeText = new
                             {
-                                Description = $"Pack DL hasta {landingPackItemCode.PackQty}",
+                                Description = $"Doppler - Pack DL hasta {landingPackItemCode.PackQty}",
                                 Discount = billingRequest.Discount > 0 ? $"{billingRequest.Discount}% OFF" : null
                             };
 
