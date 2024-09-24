@@ -215,7 +215,7 @@ namespace Doppler.Sap.Mappers.Billing
                                 ItemCode = additionalServiceItemCode,
                                 UnitPrice = additionalService.Charge,
                                 Currency = _currencyCode,
-                                DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : billingRequest.Discount ?? 0,
+                                DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : additionalService.Discount ?? 0,
                                 CostingCode = _costingCode1,
                                 CostingCode2 = _costingCode2,
                                 CostingCode3 = _costingCode3,
