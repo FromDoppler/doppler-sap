@@ -186,7 +186,7 @@ namespace Doppler.Sap.Mappers.Billing
 
                             var freeText = new
                             {
-                                Amount = $"{currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)} + IMP",
+                                Amount = $"{currencyCode} {(additionalService.PlanFee > 0 ? additionalService.PlanFee : additionalService.Charge).ToString(CultureInfo.CurrentCulture)} + IMP",
                                 Periodicity = billingRequest.Periodicity != null ? $"Conversaciones Plan {(Dictionary.PeriodicityDictionary.TryGetValue(billingRequest.Periodicity, out var outPeriodicity) ? outPeriodicity : string.Empty)}" : null,
                                 Discount = additionalService.Discount > 0 ? $"Descuento {additionalService.Discount}%" : null,
                                 Payment = billingRequest.Periodicity != null ? $"Abono {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
