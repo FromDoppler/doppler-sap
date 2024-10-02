@@ -513,6 +513,11 @@
         "ItemCode": "4.2.7",
         "SurplusEmails": true,
         "description": "DC excedentes"
+      },
+      {
+        "ItemCode": "4.2.8",
+        "conversationQty": 250,
+        "description": "Pack DC hasta 250"
       }
     ]
   },
