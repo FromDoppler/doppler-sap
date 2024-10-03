@@ -168,9 +168,20 @@ namespace Doppler.Sap.Mappers.Billing
                     {
                         if (additionalService.Type == AdditionalServiceTypeEnum.Chat)
                         {
-                            var additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.ConversationQty == additionalService.ConversationQty)
-                            .Select(x => x.ItemCode)
-                            .FirstOrDefault();
+                            var additionalServiceItemCode = string.Empty;
+
+                            if (additionalService.IsCustom)
+                            {
+                                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.CustomPlan.HasValue && x.CustomPlan.Value)
+                                                            .Select(x => x.ItemCode)
+                                                            .FirstOrDefault();
+                            }
+                            else
+                            {
+                                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.ConversationQty == additionalService.ConversationQty)
+                                                            .Select(x => x.ItemCode)
+                                                            .FirstOrDefault();
+                            }
 
                             var additionalServiceItem = new SapDocumentLineModel
                             {
