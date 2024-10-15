@@ -541,6 +541,12 @@
         "PackQty": 50,
         "PackId": 3,
         "description": "Pack DL hasta 50"
+      },
+      {
+        "ItemCode": "4.1.4",
+        "PackQty": 1,
+        "PackId": 5,
+        "description": "Pack DL hasta 1"
       }
     ]
   }
