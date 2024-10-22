@@ -212,6 +212,11 @@ namespace Doppler.Sap.Mappers.Billing
                                 additionalServiceItem.FreeText = $"Doppler - Diferencia por cambio de plan de conversaciones - {currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
                             }
 
+                            if (billingRequest.PlanType == 0 && additionalService.UserId > 0)
+                            {
+                                additionalServiceItem.FreeText += $" - UserId: {additionalService.UserId}";
+                            }
+
                             sapSaleOrder.DocumentLines.Add(additionalServiceItem);
 
                             if (additionalService.ExtraQty > 0)
@@ -238,6 +243,11 @@ namespace Doppler.Sap.Mappers.Billing
                                 }
 
                                 extraConversationsItem.FreeText += $" - Período {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}";
+
+                                if (billingRequest.PlanType == 0 && additionalService.UserId > 0)
+                                {
+                                    extraConversationsItem.FreeText += $" - UserId: {additionalService.UserId}";
+                                }
 
                                 sapSaleOrder.DocumentLines.Add(extraConversationsItem);
                             }

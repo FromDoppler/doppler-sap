@@ -250,6 +250,11 @@ namespace Doppler.Sap.Mappers.Billing
                                 additionalServiceItem.FreeText = $"Difference due to change of conversation plan - {_currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
                             }
 
+                            if (billingRequest.PlanType == 0 && additionalService.UserId > 0)
+                            {
+                                additionalServiceItem.FreeText += $" - UserId: {additionalService.UserId}";
+                            }
+
                             sapSaleOrder.DocumentLines.Add(additionalServiceItem);
 
                             if (additionalService.ExtraQty > 0)
@@ -279,6 +284,11 @@ namespace Doppler.Sap.Mappers.Billing
                                 };
 
                                 extraConversationsItem.FreeText = string.Join(" - ", new string[] { extraConversationsFreeText.ExcessEmails, extraConversationsFreeText.Amount, extraConversationsFreeText.Period }.Where(s => !string.IsNullOrEmpty(s)));
+
+                                if (billingRequest.PlanType == 0 && additionalService.UserId > 0)
+                                {
+                                    extraConversationsItem.FreeText += $" - UserId: {additionalService.UserId}";
+                                }
 
                                 sapSaleOrder.DocumentLines.Add(extraConversationsItem);
                             }
