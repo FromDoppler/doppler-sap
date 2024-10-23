@@ -162,9 +162,9 @@ namespace Doppler.Sap.Mappers.Billing
 
                             landingPackItem.FreeText = string.Join(" - ", new string[] { freeText.Description, freeText.Discount }.Where(s => !string.IsNullOrEmpty(s)));
 
-                            if (billingRequest.PlanType == 0 && additionalService.UserId > 0)
+                            if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
                             {
-                                landingPackItem.FreeText += $" - UserId: {additionalService.UserId}";
+                                landingPackItem.FreeText += $" - User: {additionalService.UserEmail}";
                             }
 
                             sapSaleOrder.DocumentLines.Add(landingPackItem);
@@ -218,9 +218,9 @@ namespace Doppler.Sap.Mappers.Billing
                                 additionalServiceItem.FreeText = $"Doppler - Diferencia por cambio de plan de conversaciones - {currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
                             }
 
-                            if (billingRequest.PlanType == 0 && additionalService.UserId > 0)
+                            if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
                             {
-                                additionalServiceItem.FreeText += $" - UserId: {additionalService.UserId}";
+                                additionalServiceItem.FreeText += $" - User: {additionalService.UserEmail}";
                             }
 
                             sapSaleOrder.DocumentLines.Add(additionalServiceItem);
@@ -250,9 +250,9 @@ namespace Doppler.Sap.Mappers.Billing
 
                                 extraConversationsItem.FreeText += $" - Período {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}";
 
-                                if (billingRequest.PlanType == 0 && additionalService.UserId > 0)
+                                if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
                                 {
-                                    extraConversationsItem.FreeText += $" - UserId: {additionalService.UserId}";
+                                    extraConversationsItem.FreeText += $" - User: {additionalService.UserEmail}";
                                 }
 
                                 sapSaleOrder.DocumentLines.Add(extraConversationsItem);
