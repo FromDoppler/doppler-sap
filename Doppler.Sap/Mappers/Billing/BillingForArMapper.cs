@@ -161,6 +161,12 @@ namespace Doppler.Sap.Mappers.Billing
                             };
 
                             landingPackItem.FreeText = string.Join(" - ", new string[] { freeText.Description, freeText.Discount }.Where(s => !string.IsNullOrEmpty(s)));
+
+                            if (billingRequest.PlanType == 0 && additionalService.UserId > 0)
+                            {
+                                landingPackItem.FreeText += $" - UserId: {additionalService.UserId}";
+                            }
+
                             sapSaleOrder.DocumentLines.Add(landingPackItem);
                         }
                     }
