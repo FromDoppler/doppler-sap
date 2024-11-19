@@ -522,6 +522,56 @@
     ]
   },
   {
+    "Plantype": 8, //OnSite
+    "PlanDescription": [
+      {
+        "ItemCode": "4.3.1",
+        "printQty": 20000,
+        "description": "Pack DI hasta 20000"
+      },
+      {
+        "ItemCode": "4.3.2",
+        "printQty": 50000,
+        "description": "Pack DI hasta 50000"
+      },
+      {
+        "ItemCode": "4.3.3",
+        "printQty": 100000,
+        "description": "Pack DI hasta 100000"
+      },
+      {
+        "ItemCode": "4.3.4",
+        "printQty": 200000,
+        "description": "Pack DI hasta 200000"
+      },
+      {
+        "ItemCode": "4.3.5",
+        "printQty": 300000,
+        "description": "Pack DI hasta 300000"
+      },
+      {
+        "ItemCode": "4.3.6",
+        "printQty": 400000,
+        "description": "Pack DI hasta 400000"
+      },
+      {
+        "ItemCode": "4.3.7",
+        "printQty": 500000,
+        "description": "Pack DI hasta 500000"
+      },
+      {
+        "ItemCode": "4.3.8",
+        "printQty": 600000,
+        "description": "Pack DI hasta 600000"
+      },
+      {
+        "ItemCode": "4.3.9",
+        "SurplusEmails": true,
+        "description": "DI excedentes"
+      }
+    ]
+  },
+  {
     "Plantype": 9,
     "PlanDescription": [
       {
