@@ -451,7 +451,7 @@ namespace Doppler.Sap.Mappers.Billing
             }
             else
             {
-                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.ConversationQty == additionalService.ConversationQty)
+                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.PrintQty == additionalService.PrintQty)
                                             .Select(x => x.ItemCode)
                                             .FirstOrDefault();
             }

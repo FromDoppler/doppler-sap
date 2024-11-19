@@ -19,5 +19,6 @@ namespace Doppler.Sap.Models
         public double ExtraFeePerUnit { get; set; }
         public bool IsCustom { get; set; }
         public string UserEmail { get; set; }
+        public int? PrintQty { get; set; }
     }
 }
