@@ -549,7 +549,7 @@ namespace Doppler.Sap.Mappers.Billing
             }
             else
             {
-                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.ConversationQty == additionalService.ConversationQty)
+                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.PrintQty == additionalService.PrintQty)
                                             .Select(x => x.ItemCode)
                                             .FirstOrDefault();
             }
@@ -597,7 +597,7 @@ namespace Doppler.Sap.Mappers.Billing
                     .Select(x => x.ItemCode)
                     .FirstOrDefault();
 
-                var extraConversationsItem = new SapDocumentLineModel
+                var extraOnSiteItem = new SapDocumentLineModel
                 {
                     TaxCode = _defaultTaxCode,
                     ItemCode = itemCodeSurplus,
@@ -610,21 +610,21 @@ namespace Doppler.Sap.Mappers.Billing
                     CostingCode4 = _costingCode4
                 };
 
-                var extraConversationsFreeText = new
+                var extraOnSiteFreeText = new
                 {
                     ExcessEmails = $"Print surplus: {additionalService.ExtraQty}",
                     Amount = additionalService.ExtraFee > 0 ? $"{_currencyCode}{additionalService.ExtraFeePerUnit}" : null,
                     Period = $"Period {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}"
                 };
 
-                extraConversationsItem.FreeText = string.Join(" - ", new string[] { extraConversationsFreeText.ExcessEmails, extraConversationsFreeText.Amount, extraConversationsFreeText.Period }.Where(s => !string.IsNullOrEmpty(s)));
+                extraOnSiteItem.FreeText = string.Join(" - ", new string[] { extraOnSiteFreeText.ExcessEmails, extraOnSiteFreeText.Amount, extraOnSiteFreeText.Period }.Where(s => !string.IsNullOrEmpty(s)));
 
                 if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
                 {
-                    extraConversationsItem.FreeText += $" - User: {additionalService.UserEmail}";
+                    extraOnSiteItem.FreeText += $" - User: {additionalService.UserEmail}";
                 }
 
-                documentLines.Add(extraConversationsItem);
+                documentLines.Add(extraOnSiteItem);
             }
 
             return documentLines;

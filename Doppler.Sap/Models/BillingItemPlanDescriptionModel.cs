@@ -11,5 +11,6 @@ namespace Doppler.Sap.Models
         public int? ConversationQty { get; set; }
         public int? PackId { get; set; }
         public int? PackQty { get; set; }
+        public int? PrintQty { get; set; }
     }
 }
