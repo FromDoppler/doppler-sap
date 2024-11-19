@@ -168,136 +168,29 @@ namespace Doppler.Sap.Mappers.Billing
             {
                 foreach (var additionalService in billingRequest.AdditionalServices)
                 {
-                    if (additionalService.Type == AdditionalServiceTypeEnum.Landing)
+                    switch (additionalService.Type)
                     {
-                        var packs = additionalService.Packs;
-
-                        foreach (var pack in packs)
-                        {
-                            var landingPackItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.PackId == pack.PackId).FirstOrDefault();
-
-                            var landingPackItem = new SapDocumentLineModel
+                        case AdditionalServiceTypeEnum.Landing:
                             {
-                                TaxCode = _defaultTaxCode,
-                                ItemCode = landingPackItemCode.ItemCode,
-                                Quantity = pack.Quantity,
-                                UnitPrice = (double)pack.Amount,
-                                Currency = _currencyCode,
-                                DiscountPercent = additionalService.Discount ?? 0,
-                                CostingCode = _costingCode1,
-                                CostingCode2 = _costingCode2,
-                                CostingCode3 = _costingCode3,
-                                CostingCode4 = _costingCode4
-                            };
+                                var landingsItems = GetLandingsItems(billingRequest, additionalService);
+                                sapSaleOrder.DocumentLines = landingsItems;
 
-                            var freeText = new
-                            {
-                                Description = $"Pack DL hasta {landingPackItemCode.PackQty}",
-                                Discount = billingRequest.Discount > 0 ? $"{billingRequest.Discount}% OFF" : null
-                            };
-
-                            landingPackItem.FreeText = string.Join(" - ", new string[] { freeText.Description, freeText.Discount }.Where(s => !string.IsNullOrEmpty(s)));
-
-                            if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
-                            {
-                                landingPackItem.FreeText += $" - User: {additionalService.UserEmail}";
+                                break;
                             }
-
-                            sapSaleOrder.DocumentLines.Add(landingPackItem);
-                        }
-                    }
-                    else
-                    {
-                        if (additionalService.Type == AdditionalServiceTypeEnum.Chat)
-                        {
-                            var additionalServiceItemCode = string.Empty;
-
-                            if (additionalService.IsCustom)
+                        case AdditionalServiceTypeEnum.Chat:
                             {
-                                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.CustomPlan.HasValue && x.CustomPlan.Value)
-                                                            .Select(x => x.ItemCode)
-                                                            .FirstOrDefault();
+                                var chatItems = GetChatItems(billingRequest, additionalService);
+                                sapSaleOrder.DocumentLines = chatItems;
+                                break;
                             }
-                            else
+                        case AdditionalServiceTypeEnum.OnSite:
                             {
-                                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.ConversationQty == additionalService.ConversationQty)
-                                                            .Select(x => x.ItemCode)
-                                                            .FirstOrDefault();
+                                var onSiteItems = GetOnSiteItems(billingRequest, additionalService);
+                                sapSaleOrder.DocumentLines = onSiteItems;
+                                break;
                             }
-
-                            var additionalServiceItem = new SapDocumentLineModel
-                            {
-                                TaxCode = _defaultTaxCode,
-                                ItemCode = additionalServiceItemCode,
-                                UnitPrice = additionalService.Charge,
-                                Currency = _currencyCode,
-                                DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : additionalService.Discount ?? 0,
-                                CostingCode = _costingCode1,
-                                CostingCode2 = _costingCode2,
-                                CostingCode3 = _costingCode3,
-                                CostingCode4 = _costingCode4
-                            };
-
-                            var freeText = new
-                            {
-                                Amount = $"{_currencyCode} {(additionalService.PlanFee > 0 ? additionalService.PlanFee : additionalService.Charge).ToString(CultureInfo.CurrentCulture)}",
-                                Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} Conversation Plan " : null,
-                                Discount = additionalService.Discount > 0 ? $"{additionalService.Discount}% OFF" : null,
-                                Payment = billingRequest.Periodicity != null ? $"Period {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
-                            };
-
-                            if (!additionalService.IsUpSelling)
-                            {
-                                additionalServiceItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
-                            }
-                            else
-                            {
-                                additionalServiceItem.FreeText = $"Difference due to change of conversation plan - {_currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
-                            }
-
-                            if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
-                            {
-                                additionalServiceItem.FreeText += $" - User: {additionalService.UserEmail}";
-                            }
-
-                            sapSaleOrder.DocumentLines.Add(additionalServiceItem);
-
-                            if (additionalService.ExtraQty > 0)
-                            {
-                                var itemCodeSurplus = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.SurplusEmails.HasValue && x.SurplusEmails.Value)
-                                    .Select(x => x.ItemCode)
-                                    .FirstOrDefault();
-
-                                var extraConversationsItem = new SapDocumentLineModel
-                                {
-                                    TaxCode = _defaultTaxCode,
-                                    ItemCode = itemCodeSurplus,
-                                    UnitPrice = additionalService.ExtraFee,
-                                    Currency = _currencyCode,
-                                    FreeText = $"Conversation surplus: {additionalService.ExtraQty}",
-                                    CostingCode = _costingCode1,
-                                    CostingCode2 = _costingCode2,
-                                    CostingCode3 = _costingCode3,
-                                    CostingCode4 = _costingCode4
-                                };
-
-                                var extraConversationsFreeText = new
-                                {
-                                    ExcessEmails = $"Conversation surplus: {additionalService.ExtraQty}",
-                                    Amount = additionalService.ExtraFee > 0 ? $"{_currencyCode}{additionalService.ExtraFeePerUnit}" : null,
-                                    Period = $"Period {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}"
-                                };
-
-                                extraConversationsItem.FreeText = string.Join(" - ", new string[] { extraConversationsFreeText.ExcessEmails, extraConversationsFreeText.Amount, extraConversationsFreeText.Period }.Where(s => !string.IsNullOrEmpty(s)));
-
-                                if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
-                                {
-                                    extraConversationsItem.FreeText += $" - User: {additionalService.UserEmail}";
-                                }
-
-                                sapSaleOrder.DocumentLines.Add(extraConversationsItem);
-                            }
-                        }
+                        default:
+                            break;
                     }
                 }
             }
@@ -504,5 +397,239 @@ namespace Doppler.Sap.Mappers.Billing
                 InvoiceId = sapSaleOrderInvoiceResponse.U_DPL_INV_ID
             };
         }
+
+        #region AddOns
+
+        private List<SapDocumentLineModel> GetLandingsItems(BillingRequest billingRequest, AdditionalServiceModel additionalService)
+        {
+            var packs = additionalService.Packs;
+            var documentLines = new List<SapDocumentLineModel>();
+
+            foreach (var pack in packs)
+            {
+                var landingPackItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.PackId == pack.PackId).FirstOrDefault();
+
+                var landingPackItem = new SapDocumentLineModel
+                {
+                    TaxCode = _defaultTaxCode,
+                    ItemCode = landingPackItemCode.ItemCode,
+                    Quantity = pack.Quantity,
+                    UnitPrice = (double)pack.Amount,
+                    Currency = _currencyCode,
+                    DiscountPercent = additionalService.Discount ?? 0,
+                    CostingCode = _costingCode1,
+                    CostingCode2 = _costingCode2,
+                    CostingCode3 = _costingCode3,
+                    CostingCode4 = _costingCode4
+                };
+
+                var freeText = new
+                {
+                    Description = $"Pack DL hasta {landingPackItemCode.PackQty}",
+                    Discount = billingRequest.Discount > 0 ? $"{billingRequest.Discount}% OFF" : null
+                };
+
+                landingPackItem.FreeText = string.Join(" - ", new string[] { freeText.Description, freeText.Discount }.Where(s => !string.IsNullOrEmpty(s)));
+
+                if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
+                {
+                    landingPackItem.FreeText += $" - User: {additionalService.UserEmail}";
+                }
+
+                documentLines.Add(landingPackItem);
+            }
+
+            return documentLines;
+        }
+
+        private List<SapDocumentLineModel> GetChatItems(BillingRequest billingRequest, AdditionalServiceModel additionalService)
+        {
+            var documentLines = new List<SapDocumentLineModel>();
+            var additionalServiceItemCode = string.Empty;
+
+            if (additionalService.IsCustom)
+            {
+                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.CustomPlan.HasValue && x.CustomPlan.Value)
+                                            .Select(x => x.ItemCode)
+                                            .FirstOrDefault();
+            }
+            else
+            {
+                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.ConversationQty == additionalService.ConversationQty)
+                                            .Select(x => x.ItemCode)
+                                            .FirstOrDefault();
+            }
+
+            var additionalServiceItem = new SapDocumentLineModel
+            {
+                TaxCode = _defaultTaxCode,
+                ItemCode = additionalServiceItemCode,
+                UnitPrice = additionalService.Charge,
+                Currency = _currencyCode,
+                DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : additionalService.Discount ?? 0,
+                CostingCode = _costingCode1,
+                CostingCode2 = _costingCode2,
+                CostingCode3 = _costingCode3,
+                CostingCode4 = _costingCode4
+            };
+
+            var freeText = new
+            {
+                Amount = $"{_currencyCode} {(additionalService.PlanFee > 0 ? additionalService.PlanFee : additionalService.Charge).ToString(CultureInfo.CurrentCulture)}",
+                Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} Conversation Plan " : null,
+                Discount = additionalService.Discount > 0 ? $"{additionalService.Discount}% OFF" : null,
+                Payment = billingRequest.Periodicity != null ? $"Period {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
+            };
+
+            if (!additionalService.IsUpSelling)
+            {
+                additionalServiceItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+            }
+            else
+            {
+                additionalServiceItem.FreeText = $"Difference due to change of conversation plan - {_currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
+            }
+
+            if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
+            {
+                additionalServiceItem.FreeText += $" - User: {additionalService.UserEmail}";
+            }
+
+            documentLines.Add(additionalServiceItem);
+
+            if (additionalService.ExtraQty > 0)
+            {
+                var itemCodeSurplus = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.SurplusEmails.HasValue && x.SurplusEmails.Value)
+                    .Select(x => x.ItemCode)
+                    .FirstOrDefault();
+
+                var extraConversationsItem = new SapDocumentLineModel
+                {
+                    TaxCode = _defaultTaxCode,
+                    ItemCode = itemCodeSurplus,
+                    UnitPrice = additionalService.ExtraFee,
+                    Currency = _currencyCode,
+                    FreeText = $"Conversation surplus: {additionalService.ExtraQty}",
+                    CostingCode = _costingCode1,
+                    CostingCode2 = _costingCode2,
+                    CostingCode3 = _costingCode3,
+                    CostingCode4 = _costingCode4
+                };
+
+                var extraConversationsFreeText = new
+                {
+                    ExcessEmails = $"Conversation surplus: {additionalService.ExtraQty}",
+                    Amount = additionalService.ExtraFee > 0 ? $"{_currencyCode}{additionalService.ExtraFeePerUnit}" : null,
+                    Period = $"Period {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}"
+                };
+
+                extraConversationsItem.FreeText = string.Join(" - ", new string[] { extraConversationsFreeText.ExcessEmails, extraConversationsFreeText.Amount, extraConversationsFreeText.Period }.Where(s => !string.IsNullOrEmpty(s)));
+
+                if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
+                {
+                    extraConversationsItem.FreeText += $" - User: {additionalService.UserEmail}";
+                }
+
+                documentLines.Add(extraConversationsItem);
+            }
+
+            return documentLines;
+        }
+
+        private List<SapDocumentLineModel> GetOnSiteItems(BillingRequest billingRequest, AdditionalServiceModel additionalService)
+        {
+            var documentLines = new List<SapDocumentLineModel>();
+            var additionalServiceItemCode = string.Empty;
+
+            if (additionalService.IsCustom)
+            {
+                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.CustomPlan.HasValue && x.CustomPlan.Value)
+                                            .Select(x => x.ItemCode)
+                                            .FirstOrDefault();
+            }
+            else
+            {
+                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.ConversationQty == additionalService.ConversationQty)
+                                            .Select(x => x.ItemCode)
+                                            .FirstOrDefault();
+            }
+
+            var additionalServiceItem = new SapDocumentLineModel
+            {
+                TaxCode = _defaultTaxCode,
+                ItemCode = additionalServiceItemCode,
+                UnitPrice = additionalService.Charge,
+                Currency = _currencyCode,
+                DiscountPercent = billingRequest.DiscountedAmount.HasValue ? 0 : additionalService.Discount ?? 0,
+                CostingCode = _costingCode1,
+                CostingCode2 = _costingCode2,
+                CostingCode3 = _costingCode3,
+                CostingCode4 = _costingCode4
+            };
+
+            var freeText = new
+            {
+                Amount = $"{_currencyCode} {(additionalService.PlanFee > 0 ? additionalService.PlanFee : additionalService.Charge).ToString(CultureInfo.CurrentCulture)}",
+                Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} Print Plan " : null,
+                Discount = additionalService.Discount > 0 ? $"{additionalService.Discount}% OFF" : null,
+                Payment = billingRequest.Periodicity != null ? $"Period {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
+            };
+
+            if (!additionalService.IsUpSelling)
+            {
+                additionalServiceItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+            }
+            else
+            {
+                additionalServiceItem.FreeText = $"Difference due to change of print plan - {_currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
+            }
+
+            if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
+            {
+                additionalServiceItem.FreeText += $" - User: {additionalService.UserEmail}";
+            }
+
+            documentLines.Add(additionalServiceItem);
+
+            if (additionalService.ExtraQty > 0)
+            {
+                var itemCodeSurplus = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.SurplusEmails.HasValue && x.SurplusEmails.Value)
+                    .Select(x => x.ItemCode)
+                    .FirstOrDefault();
+
+                var extraConversationsItem = new SapDocumentLineModel
+                {
+                    TaxCode = _defaultTaxCode,
+                    ItemCode = itemCodeSurplus,
+                    UnitPrice = additionalService.ExtraFee,
+                    Currency = _currencyCode,
+                    FreeText = $"Print surplus: {additionalService.ExtraQty}",
+                    CostingCode = _costingCode1,
+                    CostingCode2 = _costingCode2,
+                    CostingCode3 = _costingCode3,
+                    CostingCode4 = _costingCode4
+                };
+
+                var extraConversationsFreeText = new
+                {
+                    ExcessEmails = $"Print surplus: {additionalService.ExtraQty}",
+                    Amount = additionalService.ExtraFee > 0 ? $"{_currencyCode}{additionalService.ExtraFeePerUnit}" : null,
+                    Period = $"Period {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}"
+                };
+
+                extraConversationsItem.FreeText = string.Join(" - ", new string[] { extraConversationsFreeText.ExcessEmails, extraConversationsFreeText.Amount, extraConversationsFreeText.Period }.Where(s => !string.IsNullOrEmpty(s)));
+
+                if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
+                {
+                    extraConversationsItem.FreeText += $" - User: {additionalService.UserEmail}";
+                }
+
+                documentLines.Add(extraConversationsItem);
+            }
+
+            return documentLines;
+        }
+
+        #endregion
     }
 }
