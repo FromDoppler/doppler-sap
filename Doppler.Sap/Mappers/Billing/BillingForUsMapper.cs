@@ -173,20 +173,31 @@ namespace Doppler.Sap.Mappers.Billing
                         case AdditionalServiceTypeEnum.Landing:
                             {
                                 var landingsItems = GetLandingsItems(billingRequest, additionalService);
-                                sapSaleOrder.DocumentLines = landingsItems;
+                                foreach (SapDocumentLineModel landingItem in landingsItems)
+                                {
+                                    sapSaleOrder.DocumentLines.Add(landingItem);
+                                }
 
                                 break;
                             }
                         case AdditionalServiceTypeEnum.Chat:
                             {
                                 var chatItems = GetChatItems(billingRequest, additionalService);
-                                sapSaleOrder.DocumentLines = chatItems;
+                                foreach (SapDocumentLineModel chatItem in chatItems)
+                                {
+                                    sapSaleOrder.DocumentLines.Add(chatItem);
+                                }
+
                                 break;
                             }
                         case AdditionalServiceTypeEnum.OnSite:
                             {
                                 var onSiteItems = GetOnSiteItems(billingRequest, additionalService);
-                                sapSaleOrder.DocumentLines = onSiteItems;
+                                foreach (SapDocumentLineModel onSiteItem in onSiteItems)
+                                {
+                                    sapSaleOrder.DocumentLines.Add(onSiteItem);
+                                }
+
                                 break;
                             }
                         default:
