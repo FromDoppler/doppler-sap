@@ -481,7 +481,7 @@ namespace Doppler.Sap.Mappers.Billing
             var freeText = new
             {
                 Amount = $"{currencyCode} {(additionalService.PlanFee > 0 ? additionalService.PlanFee : additionalService.Charge).ToString(CultureInfo.CurrentCulture)} + IMP",
-                Periodicity = billingRequest.Periodicity != null ? $"Impresiones Plan {(Dictionary.PeriodicityDictionary.TryGetValue(billingRequest.Periodicity, out var outPeriodicity) ? outPeriodicity : string.Empty)}" : null,
+                Periodicity = billingRequest.Periodicity != null ? $"OnSite Plan {(Dictionary.PeriodicityDictionary.TryGetValue(billingRequest.Periodicity, out var outPeriodicity) ? outPeriodicity : string.Empty)}" : null,
                 Discount = additionalService.Discount > 0 ? $"Descuento {additionalService.Discount}%" : null,
                 Payment = billingRequest.Periodicity != null ? $"Abono {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
             };
@@ -492,7 +492,7 @@ namespace Doppler.Sap.Mappers.Billing
             }
             else
             {
-                additionalServiceItem.FreeText = $"Doppler - Diferencia por cambio de plan de impresiones - {currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
+                additionalServiceItem.FreeText = $"Doppler - Diferencia por cambio de plan de onsite - {currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
             }
 
             if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
@@ -513,7 +513,7 @@ namespace Doppler.Sap.Mappers.Billing
                     ItemCode = itemCodeSurplus,
                     UnitPrice = additionalService.ExtraFee,
                     Currency = currencyCode,
-                    FreeText = $"Doppler - Impresiones excedentes {additionalService.ExtraQty}",
+                    FreeText = $"Doppler - OnSite excedentes {additionalService.ExtraQty}",
                     CostingCode = _costingCode1,
                     CostingCode2 = _costingCode2,
                     CostingCode3 = _costingCode3,

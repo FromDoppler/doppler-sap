@@ -581,7 +581,7 @@ namespace Doppler.Sap.Mappers.Billing
             var freeText = new
             {
                 Amount = $"{_currencyCode} {(additionalService.PlanFee > 0 ? additionalService.PlanFee : additionalService.Charge).ToString(CultureInfo.CurrentCulture)}",
-                Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} Print Plan " : null,
+                Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} OnSite Plan " : null,
                 Discount = additionalService.Discount > 0 ? $"{additionalService.Discount}% OFF" : null,
                 Payment = billingRequest.Periodicity != null ? $"Period {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
             };
@@ -592,7 +592,7 @@ namespace Doppler.Sap.Mappers.Billing
             }
             else
             {
-                additionalServiceItem.FreeText = $"Difference due to change of print plan - {_currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
+                additionalServiceItem.FreeText = $"Difference due to change of onsite plan - {_currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
             }
 
             if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
@@ -614,7 +614,7 @@ namespace Doppler.Sap.Mappers.Billing
                     ItemCode = itemCodeSurplus,
                     UnitPrice = additionalService.ExtraFee,
                     Currency = _currencyCode,
-                    FreeText = $"Print surplus: {additionalService.ExtraQty}",
+                    FreeText = $"OnSite surplus: {additionalService.ExtraQty}",
                     CostingCode = _costingCode1,
                     CostingCode2 = _costingCode2,
                     CostingCode3 = _costingCode3,
@@ -623,7 +623,7 @@ namespace Doppler.Sap.Mappers.Billing
 
                 var extraOnSiteFreeText = new
                 {
-                    ExcessEmails = $"Print surplus: {additionalService.ExtraQty}",
+                    ExcessEmails = $"OnSite surplus: {additionalService.ExtraQty}",
                     Amount = additionalService.ExtraFee > 0 ? $"{_currencyCode}{additionalService.ExtraFeePerUnit}" : null,
                     Period = $"Period {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}"
                 };
