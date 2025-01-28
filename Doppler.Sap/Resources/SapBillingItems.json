@@ -588,6 +588,11 @@
         "ItemCode": "4.3.9",
         "SurplusEmails": true,
         "description": "DI excedentes"
+      },
+      {
+        "ItemCode": "4.3.10",
+        "printQty": 10000,
+        "description": "Pack DI hasta 10000"
       }
     ]
   },
