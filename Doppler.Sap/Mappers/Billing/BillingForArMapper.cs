@@ -423,7 +423,9 @@ namespace Doppler.Sap.Mappers.Billing
                     ItemCode = itemCodeSurplus,
                     UnitPrice = additionalService.ExtraFee,
                     Currency = currencyCode,
-                    FreeText = $"Doppler - Conversaciones excedentes {additionalService.ExtraQty}",
+                    FreeText = billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail) ?
+                                $"Doppler - {additionalService.ExtraQty}" :
+                                $"Doppler - Conversaciones excedentes - {additionalService.ExtraQty}",
                     CostingCode = _costingCode1,
                     CostingCode2 = _costingCode2,
                     CostingCode3 = _costingCode3,
@@ -513,7 +515,9 @@ namespace Doppler.Sap.Mappers.Billing
                     ItemCode = itemCodeSurplus,
                     UnitPrice = additionalService.ExtraFee,
                     Currency = currencyCode,
-                    FreeText = $"Doppler - OnSite excedentes {additionalService.ExtraQty}",
+                    FreeText = billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail) ?
+                                $"Doppler - {additionalService.ExtraQty}" :
+                                $"Doppler - OnSite excedentes - {additionalService.ExtraQty}",
                     CostingCode = _costingCode1,
                     CostingCode2 = _costingCode2,
                     CostingCode3 = _costingCode3,
