@@ -529,7 +529,9 @@ namespace Doppler.Sap.Mappers.Billing
 
                 var extraConversationsFreeText = new
                 {
-                    ExcessEmails = $"Conversation surplus: {additionalService.ExtraQty}",
+                    ExcessEmails = billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail) ?
+                                    $"{additionalService.ExtraQty}" :
+                                    $"Conversation surplus: {additionalService.ExtraQty}",
                     Amount = additionalService.ExtraFee > 0 ? $"{_currencyCode}{additionalService.ExtraFeePerUnit}" : null,
                     Period = $"Period {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}"
                 };
@@ -623,7 +625,9 @@ namespace Doppler.Sap.Mappers.Billing
 
                 var extraOnSiteFreeText = new
                 {
-                    ExcessEmails = $"OnSite surplus: {additionalService.ExtraQty}",
+                    ExcessEmails = billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail) ?
+                                    $"{additionalService.ExtraQty}" :
+                                    $"OnSite surplus: {additionalService.ExtraQty}",
                     Amount = additionalService.ExtraFee > 0 ? $"{_currencyCode}{additionalService.ExtraFeePerUnit}" : null,
                     Period = $"Period {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}"
                 };
