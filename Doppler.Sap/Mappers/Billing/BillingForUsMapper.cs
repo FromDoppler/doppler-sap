@@ -580,6 +580,8 @@ namespace Doppler.Sap.Mappers.Billing
                 CostingCode4 = _costingCode4
             };
 
+            var addOnType = additionalService.Type == AdditionalServiceTypeEnum.OnSite ? "OnSite" : "Push Notifications";
+
             var freeText = new
             {
                 Amount = $"{_currencyCode} {(additionalService.PlanFee > 0 ? additionalService.PlanFee : additionalService.Charge).ToString(CultureInfo.CurrentCulture)}",
@@ -590,11 +592,17 @@ namespace Doppler.Sap.Mappers.Billing
 
             if (!additionalService.IsUpSelling)
             {
-                additionalServiceItem.FreeText = string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                var addOnDescription = string.Empty;
+                if (billingRequest.PlanType > 0)
+                {
+                    addOnDescription = addOnType + " - ";
+                }
+
+                additionalServiceItem.FreeText = addOnDescription + string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
             }
             else
             {
-                additionalServiceItem.FreeText = $"Difference due to change of onsite plan - {_currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
+                additionalServiceItem.FreeText = $"Difference due to change of {addOnType} plan - {_currencyCode} {additionalService.Charge.ToString(CultureInfo.CurrentCulture)}";
             }
 
             if (billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail))
@@ -616,7 +624,7 @@ namespace Doppler.Sap.Mappers.Billing
                     ItemCode = itemCodeSurplus,
                     UnitPrice = additionalService.ExtraFee,
                     Currency = _currencyCode,
-                    FreeText = $"OnSite surplus: {additionalService.ExtraQty}",
+                    FreeText = $"{addOnType} surplus: {additionalService.ExtraQty}",
                     CostingCode = _costingCode1,
                     CostingCode2 = _costingCode2,
                     CostingCode3 = _costingCode3,
@@ -627,7 +635,7 @@ namespace Doppler.Sap.Mappers.Billing
                 {
                     ExcessEmails = billingRequest.PlanType == 0 && !string.IsNullOrEmpty(additionalService.UserEmail) ?
                                     $"{additionalService.ExtraQty}" :
-                                    $"OnSite surplus: {additionalService.ExtraQty}",
+                                    $"{addOnType} surplus: {additionalService.ExtraQty}",
                     Amount = additionalService.ExtraFee > 0 ? $"{_currencyCode}{additionalService.ExtraFeePerUnit}" : null,
                     Period = $"Period {additionalService.ExtraPeriodMonth:00} {additionalService.ExtraPeriodYear}"
                 };

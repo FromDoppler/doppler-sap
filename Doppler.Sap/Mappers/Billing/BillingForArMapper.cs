@@ -585,7 +585,13 @@ namespace Doppler.Sap.Mappers.Billing
 
             if (!additionalService.IsUpSelling)
             {
-                additionalServiceItem.FreeText = "Doppler - " + string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
+                var addOnDescription = string.Empty;
+                if (billingRequest.PlanType > 0)
+                {
+                    addOnDescription = addOnType + " - ";
+                }
+
+                additionalServiceItem.FreeText = $"Doppler - {addOnDescription}" + string.Join(" - ", new string[] { freeText.Amount, freeText.Periodicity, freeText.Discount, freeText.Payment }.Where(s => !string.IsNullOrEmpty(s)));
             }
             else
             {
