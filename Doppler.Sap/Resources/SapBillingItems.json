@@ -546,42 +546,42 @@
     "PlanDescription": [
       {
         "ItemCode": "4.3.1",
-        "printQty": 20000,
+        "Quantity": 20000,
         "description": "Pack DI hasta 20000"
       },
       {
         "ItemCode": "4.3.2",
-        "printQty": 50000,
+        "Quantity": 50000,
         "description": "Pack DI hasta 50000"
       },
       {
         "ItemCode": "4.3.3",
-        "printQty": 100000,
+        "Quantity": 100000,
         "description": "Pack DI hasta 100000"
       },
       {
         "ItemCode": "4.3.4",
-        "printQty": 200000,
+        "Quantity": 200000,
         "description": "Pack DI hasta 200000"
       },
       {
         "ItemCode": "4.3.5",
-        "printQty": 300000,
+        "Quantity": 300000,
         "description": "Pack DI hasta 300000"
       },
       {
         "ItemCode": "4.3.6",
-        "printQty": 400000,
+        "Quantity": 400000,
         "description": "Pack DI hasta 400000"
       },
       {
         "ItemCode": "4.3.7",
-        "printQty": 500000,
+        "Quantity": 500000,
         "description": "Pack DI hasta 500000"
       },
       {
         "ItemCode": "4.3.8",
-        "printQty": 600000,
+        "Quantity": 600000,
         "description": "Pack DI hasta 600000"
       },
       {
@@ -591,7 +591,7 @@
       },
       {
         "ItemCode": "4.3.10",
-        "printQty": 10000,
+        "Quantity": 10000,
         "description": "Pack DI hasta 10000"
       }
     ]
@@ -622,6 +622,61 @@
         "PackQty": 1,
         "PackId": 5,
         "description": "Pack DL hasta 1"
+      }
+    ]
+  },
+  {
+    "Plantype": 10, //Push Notification
+    "PlanDescription": [
+      {
+        "ItemCode": "4.3.10",
+        "Quantity": 10000,
+        "description": "Pack DPN hasta 10000"
+      },
+      {
+        "ItemCode": "4.3.1",
+        "Quantity": 20000,
+        "description": "Pack DPN hasta 20000"
+      },
+      {
+        "ItemCode": "4.3.2",
+        "Quantity": 50000,
+        "description": "Pack DPN hasta 50000"
+      },
+      {
+        "ItemCode": "4.3.3",
+        "Quantity": 100000,
+        "description": "Pack DPN hasta 100000"
+      },
+      {
+        "ItemCode": "4.3.4",
+        "Quantity": 200000,
+        "description": "Pack DPN hasta 200000"
+      },
+      {
+        "ItemCode": "4.3.5",
+        "Quantity": 300000,
+        "description": "Pack DPN hasta 300000"
+      },
+      {
+        "ItemCode": "4.3.6",
+        "Quantity": 400000,
+        "description": "Pack DPN hasta 400000"
+      },
+      {
+        "ItemCode": "4.3.7",
+        "Quantity": 500000,
+        "description": "Pack DPN hasta 500000"
+      },
+      {
+        "ItemCode": "4.3.8",
+        "Quantity": 600000,
+        "description": "Pack DPN hasta 600000"
+      },
+      {
+        "ItemCode": "4.3.9",
+        "SurplusEmails": true,
+        "description": "DPN excedentes"
       }
     ]
   }
