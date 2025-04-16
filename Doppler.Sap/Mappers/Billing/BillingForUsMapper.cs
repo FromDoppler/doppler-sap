@@ -191,11 +191,12 @@ namespace Doppler.Sap.Mappers.Billing
                                 break;
                             }
                         case AdditionalServiceTypeEnum.OnSite:
+                        case AdditionalServiceTypeEnum.PushNotification:
                             {
-                                var onSiteItems = GetOnSiteItems(billingRequest, additionalService);
-                                foreach (SapDocumentLineModel onSiteItem in onSiteItems)
+                                var addOnItems = GetAddOnItems(billingRequest, additionalService);
+                                foreach (SapDocumentLineModel addOnItem in addOnItems)
                                 {
-                                    sapSaleOrder.DocumentLines.Add(onSiteItem);
+                                    sapSaleOrder.DocumentLines.Add(addOnItem);
                                 }
 
                                 break;
@@ -549,7 +550,7 @@ namespace Doppler.Sap.Mappers.Billing
             return documentLines;
         }
 
-        private List<SapDocumentLineModel> GetOnSiteItems(BillingRequest billingRequest, AdditionalServiceModel additionalService)
+        private List<SapDocumentLineModel> GetAddOnItems(BillingRequest billingRequest, AdditionalServiceModel additionalService)
         {
             var documentLines = new List<SapDocumentLineModel>();
             var additionalServiceItemCode = string.Empty;
@@ -562,7 +563,7 @@ namespace Doppler.Sap.Mappers.Billing
             }
             else
             {
-                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.PrintQty == additionalService.PrintQty)
+                additionalServiceItemCode = _sapBillingItemsService.GetItems((int)additionalService.Type).Where(x => x.Quantity == additionalService.Quantity)
                                             .Select(x => x.ItemCode)
                                             .FirstOrDefault();
             }
