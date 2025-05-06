@@ -494,7 +494,7 @@ namespace Doppler.Sap.Mappers.Billing
             if (!additionalService.IsUpSelling)
             {
                 var addOnDescription = string.Empty;
-                if (billingRequest.PlanType > 0)
+                if (billingRequest.PlanType > 0 && string.IsNullOrEmpty(freeText.Periodicity))
                 {
                     addOnDescription = addOnType + " - ";
                 }

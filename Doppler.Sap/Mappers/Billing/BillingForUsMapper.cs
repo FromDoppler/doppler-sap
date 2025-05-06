@@ -586,7 +586,7 @@ namespace Doppler.Sap.Mappers.Billing
             var freeText = new
             {
                 Amount = $"{_currencyCode} {(additionalService.PlanFee > 0 ? additionalService.PlanFee : additionalService.Charge).ToString(CultureInfo.CurrentCulture)}",
-                Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} OnSite Plan " : null,
+                Periodicity = billingRequest.Periodicity != null ? $" {(periodicities.TryGetValue(billingRequest.Periodicity, out var outPeriodicity2) ? outPeriodicity2 : string.Empty)} {addOnType} Plan " : null,
                 Discount = additionalService.Discount > 0 ? $"{additionalService.Discount}% OFF" : null,
                 Payment = billingRequest.Periodicity != null ? $"Period {billingRequest.PeriodMonth:00} {billingRequest.PeriodYear}" : string.Empty
             };
@@ -594,7 +594,7 @@ namespace Doppler.Sap.Mappers.Billing
             if (!additionalService.IsUpSelling)
             {
                 var addOnDescription = string.Empty;
-                if (billingRequest.PlanType > 0)
+                if (billingRequest.PlanType > 0 && string.IsNullOrEmpty(freeText.Periodicity))
                 {
                     addOnDescription = addOnType + " - ";
                 }
