@@ -84,7 +84,7 @@ namespace Doppler.Sap.Factory
 
             //SAP uses a non conventional patch where you have to send only the fields that you want to be changed with the new values
             dequeuedTask.BusinessPartner.BPAddresses = GetBPAddressesPatchObject(dequeuedTask.BusinessPartner.BPAddresses);
-            dequeuedTask.BusinessPartner.ContactEmployees = GetContactEmployeesPatchObject(dequeuedTask.BusinessPartner.ContactEmployees, dequeuedTask.ExistentBusinessPartner.ContactEmployees);
+            dequeuedTask.BusinessPartner.ContactEmployees = GetContactEmployeesPatchObject(sapSystem, dequeuedTask.BusinessPartner.ContactEmployees, dequeuedTask.ExistentBusinessPartner.ContactEmployees);
             //we don't want to update: CUITs/DNI and Currency
             dequeuedTask.BusinessPartner.FederalTaxID = null;
             dequeuedTask.BusinessPartner.Currency = null;
@@ -133,7 +133,7 @@ namespace Doppler.Sap.Factory
             return bPAddresses;
         }
 
-        private List<SapContactEmployee> GetContactEmployeesPatchObject(List<SapContactEmployee> newContactEmployeeList, List<SapContactEmployee> existentContactEmployeeList)
+        private List<SapContactEmployee> GetContactEmployeesPatchObject(string sapSystem, List<SapContactEmployee> newContactEmployeeList, List<SapContactEmployee> existentContactEmployeeList)
         {
             var updatesOnContactEmployee = newContactEmployeeList
                 //new CEs
@@ -148,8 +148,7 @@ namespace Doppler.Sap.Factory
                     .Select(x => new SapContactEmployee
                     {
                         Active = "tNO",
-                        InternalCode = x.InternalCode,
-                        U_BOY_85_ECAT = "1"
+                        InternalCode = x.InternalCode
                     }))
                 //reactivate existent CEs
                 .Union(existentContactEmployeeList
@@ -159,12 +158,18 @@ namespace Doppler.Sap.Factory
                     .Select(x => new SapContactEmployee
                     {
                         Active = "tYES",
-                        InternalCode = x.InternalCode,
-                        U_BOY_85_ECAT = "1"
+                        InternalCode = x.InternalCode
                     }))
                 .ToList();
 
-            return updatesOnContactEmployee;
+            return sapSystem == "US" ?
+                updatesOnContactEmployee :
+                updatesOnContactEmployee.Select(ce => new SapContactEmployee
+                {
+                    Active = ce.Active,
+                    InternalCode = ce.InternalCode,
+                    U_BOY_85_ECAT = "1"
+                }).ToList();
         }
     }
 }

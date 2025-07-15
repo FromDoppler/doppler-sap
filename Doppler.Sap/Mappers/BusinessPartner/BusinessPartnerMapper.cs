@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using System.Reflection.PortableExecutable;
 
 namespace Doppler.Sap.Mappers.BusinessPartner
 {
@@ -34,7 +35,7 @@ namespace Doppler.Sap.Mappers.BusinessPartner
             return groupCode;
         }
 
-        protected List<SapContactEmployee> GetContactEmployees(DopplerUserDto dopplerUser, string cardCode, string emailGroupCode)
+        protected List<SapContactEmployee> GetContactEmployees(string sapSystem, DopplerUserDto dopplerUser, string cardCode, string emailGroupCode)
         {
             var contactEmployees = (dopplerUser.BillingEmails != null && dopplerUser.BillingEmails[0] != String.Empty) ?
                 dopplerUser.BillingEmails
@@ -44,8 +45,7 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                         E_Mail = x.ToLower(),
                         CardCode = cardCode,
                         Active = "tYES",
-                        EmailGroupCode = emailGroupCode,
-                        U_BOY_85_ECAT = "1"
+                        EmailGroupCode = emailGroupCode
                     })
                     .Append(new SapContactEmployee
                     {
@@ -53,8 +53,7 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                         E_Mail = dopplerUser.Email.ToLower(),
                         CardCode = cardCode,
                         Active = "tYES",
-                        EmailGroupCode = emailGroupCode,
-                        U_BOY_85_ECAT = "1"
+                        EmailGroupCode = emailGroupCode
                     })
                     .GroupBy(y => y.E_Mail)
                     .Select(z => z.First())
@@ -68,10 +67,21 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                             E_Mail = dopplerUser.Email.ToLower(),
                             CardCode = cardCode,
                             Active = "tYES",
-                            EmailGroupCode = emailGroupCode,
-                            U_BOY_85_ECAT = "1"
+                            EmailGroupCode = emailGroupCode
                         }
                     };
+
+            contactEmployees = sapSystem == "US" ?
+                contactEmployees :
+                contactEmployees.Select(ce => new SapContactEmployee
+                {
+                    E_Mail = ce.E_Mail,
+                    CardCode = ce.CardCode,
+                    EmailGroupCode = ce.EmailGroupCode,
+                    Name = ce.Name,
+                    Active = ce.Active,
+                    U_BOY_85_ECAT = "1"
+                }).ToList();
 
             var sapContactEmployees = GetContactEmployeesWithoutRepeatedName(contactEmployees);
             return sapContactEmployees;
