@@ -76,7 +76,7 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                 U_DPL_SUSPENDED = dopplerUser.Blocked ? "Y" : "N",
                 SalesPersonCode = (dopplerUser.IsInbound.HasValue ? (dopplerUser.IsInbound.GetValueOrDefault() ? 1 : 2) : 3),
                 FatherCard = fatherBusinessPartner?.CardCode,
-                ContactEmployees = GetContactEmployees(dopplerUser, cardCode, "Billing"),
+                ContactEmployees = GetContactEmployees("US", dopplerUser, cardCode, "Billing"),
                 BPAddresses = new List<Address>
                 {
                     new Address
