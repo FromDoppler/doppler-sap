@@ -148,7 +148,8 @@ namespace Doppler.Sap.Factory
                     .Select(x => new SapContactEmployee
                     {
                         Active = "tNO",
-                        InternalCode = x.InternalCode
+                        InternalCode = x.InternalCode,
+                        U_BOY_85_ECAT = "1"
                     }))
                 //reactivate existent CEs
                 .Union(existentContactEmployeeList
@@ -158,7 +159,8 @@ namespace Doppler.Sap.Factory
                     .Select(x => new SapContactEmployee
                     {
                         Active = "tYES",
-                        InternalCode = x.InternalCode
+                        InternalCode = x.InternalCode,
+                        U_BOY_85_ECAT = "1"
                     }))
                 .ToList();
 
