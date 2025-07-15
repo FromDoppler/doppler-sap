@@ -83,7 +83,7 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                 Indicator = "FC",
                 DunningTerm = "ReclamoVto",
                 FatherCard = fatherBusinessPartner?.CardCode,
-                ContactEmployees = GetContactEmployees(dopplerUser, cardCode, "Facturacion"),
+                ContactEmployees = GetContactEmployees("AR", dopplerUser, cardCode, "Facturacion"),
                 BPAddresses = new List<Address>
                 {
                     new Address
