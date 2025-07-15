@@ -8,5 +8,6 @@ namespace Doppler.Sap.Models
         public string Active { get; set; }
         public string EmailGroupCode { get; set; }
         public int? InternalCode { get; set; }
+        public string U_BOY_85_ECAT { get; set; }
     }
 }

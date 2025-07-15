@@ -44,7 +44,8 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                         E_Mail = x.ToLower(),
                         CardCode = cardCode,
                         Active = "tYES",
-                        EmailGroupCode = emailGroupCode
+                        EmailGroupCode = emailGroupCode,
+                        U_BOY_85_ECAT = "1"
                     })
                     .Append(new SapContactEmployee
                     {
@@ -52,7 +53,8 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                         E_Mail = dopplerUser.Email.ToLower(),
                         CardCode = cardCode,
                         Active = "tYES",
-                        EmailGroupCode = emailGroupCode
+                        EmailGroupCode = emailGroupCode,
+                        U_BOY_85_ECAT = "1"
                     })
                     .GroupBy(y => y.E_Mail)
                     .Select(z => z.First())
@@ -66,7 +68,8 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                             E_Mail = dopplerUser.Email.ToLower(),
                             CardCode = cardCode,
                             Active = "tYES",
-                            EmailGroupCode = emailGroupCode
+                            EmailGroupCode = emailGroupCode,
+                            U_BOY_85_ECAT = "1"
                         }
                     };
 
