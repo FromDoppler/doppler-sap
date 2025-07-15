@@ -166,6 +166,10 @@ namespace Doppler.Sap.Factory
                 updatesOnContactEmployee :
                 updatesOnContactEmployee.Select(ce => new SapContactEmployee
                 {
+                    E_Mail = ce.E_Mail,
+                    CardCode = ce.CardCode,
+                    EmailGroupCode = ce.EmailGroupCode,
+                    Name = ce.Name,
                     Active = ce.Active,
                     InternalCode = ce.InternalCode,
                     U_BOY_85_ECAT = "1"

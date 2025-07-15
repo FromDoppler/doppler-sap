@@ -71,9 +71,10 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                         }
                     };
 
-            contactEmployees = sapSystem == "US" ?
-                contactEmployees :
-                contactEmployees.Select(ce => new SapContactEmployee
+            var sapContactEmployeesWithoutRepeatedName = GetContactEmployeesWithoutRepeatedName(contactEmployees);
+            var sapContactEmployees = sapSystem == "US" ?
+                sapContactEmployeesWithoutRepeatedName :
+                sapContactEmployeesWithoutRepeatedName.Select(ce => new SapContactEmployee
                 {
                     E_Mail = ce.E_Mail,
                     CardCode = ce.CardCode,
@@ -83,7 +84,6 @@ namespace Doppler.Sap.Mappers.BusinessPartner
                     U_BOY_85_ECAT = "1"
                 }).ToList();
 
-            var sapContactEmployees = GetContactEmployeesWithoutRepeatedName(contactEmployees);
             return sapContactEmployees;
         }
 
