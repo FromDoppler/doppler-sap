@@ -186,7 +186,7 @@ namespace Doppler.Sap.Mappers.Billing
             throw new System.NotImplementedException();
         }
 
-        public SapOutgoingPaymentModel MapSapOutgoingPayment(SapCreditNoteResponse sapCreditNoteResponse, string transferReference)
+        public SapOutgoingPaymentModel MapSapOutgoingPayment(SapCreditNoteResponse sapCreditNoteResponse, string transferReference, bool useWorldPay)
         {
             //Is not implemented because at the moment is not necessary the send the Payment to SAP
             throw new System.NotImplementedException();

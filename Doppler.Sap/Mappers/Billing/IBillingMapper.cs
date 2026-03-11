@@ -8,7 +8,7 @@ namespace Doppler.Sap.Mappers.Billing
         bool CanMapSapSystem(string sapSystem);
         SapSaleOrderModel MapDopplerBillingRequestToSapSaleOrder(BillingRequest billingRequest);
         SapIncomingPaymentModel MapSapIncomingPayment(int docEntry, string cardCode, decimal docTotal, string transferReference, DateTime? paymentDate, bool useWorldPay);
-        SapOutgoingPaymentModel MapSapOutgoingPayment(SapCreditNoteResponse sapCreditNoteResponse, string transferReference);
+        SapOutgoingPaymentModel MapSapOutgoingPayment(SapCreditNoteResponse sapCreditNoteResponse, string transferReference, bool useWorldPay);
 
         SapSaleOrderModel MapDopplerUpdateBillingRequestToSapSaleOrder(UpdatePaymentStatusRequest updateBillingRequest);
         SapCreditNoteModel MapToSapCreditNote(SapSaleOrderInvoiceResponse sapSaleOrderInvoiceResponse, CreditNoteRequest creditNoteRequest);

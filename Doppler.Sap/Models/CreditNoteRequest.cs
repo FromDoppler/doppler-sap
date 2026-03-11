@@ -13,5 +13,6 @@ namespace Doppler.Sap.Models
         public bool TransactionApproved { get; set; }
         public string TransferReference { get; set; }
         public string Reason { get; set; }
+        public bool UseWorldPay { get; set; }
     }
 }

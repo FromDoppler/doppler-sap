@@ -54,7 +54,7 @@ namespace Doppler.Sap.Factory
                             dequeuedTask.CreditNoteRequest.TransactionApproved)
                         {
                             var response = JsonConvert.DeserializeObject<SapCreditNoteResponse>(sapResponse.SapResponseContent);
-                            return await SendOutgoingPaymentToSap(sapSystem, response, dequeuedTask.CreditNoteRequest.TransferReference);
+                            return await SendOutgoingPaymentToSap(sapSystem, response, dequeuedTask.CreditNoteRequest.TransferReference, dequeuedTask.CreditNoteRequest.UseWorldPay);
                         }
                     }
                     else
@@ -119,7 +119,7 @@ namespace Doppler.Sap.Factory
                     return sapResponse;
                 }
 
-                return await SendOutgoingPaymentToSap(sapSystem, existentCreditNote, dequeuedTask.CreditNoteRequest.TransferReference);
+                return await SendOutgoingPaymentToSap(sapSystem, existentCreditNote, dequeuedTask.CreditNoteRequest.TransferReference, dequeuedTask.CreditNoteRequest.UseWorldPay);
             }
             catch (Exception ex)
             {
@@ -232,10 +232,10 @@ namespace Doppler.Sap.Factory
             return taskResult;
         }
 
-        private async Task<SapTaskResult> SendOutgoingPaymentToSap(string sapSystem, SapCreditNoteResponse response, string transferReference)
+        private async Task<SapTaskResult> SendOutgoingPaymentToSap(string sapSystem, SapCreditNoteResponse response, string transferReference, bool useWorldPay)
         {
             var billingMapper = GetMapper(sapSystem);
-            var outgoingPaymentRequest = billingMapper.MapSapOutgoingPayment(response, transferReference);
+            var outgoingPaymentRequest = billingMapper.MapSapOutgoingPayment(response, transferReference, useWorldPay);
 
             var serviceSetting = SapServiceSettings.GetSettings(_sapConfig, sapSystem);
             var message = new HttpRequestMessage
