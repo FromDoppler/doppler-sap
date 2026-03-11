@@ -180,7 +180,7 @@ namespace Doppler.Sap.Mappers.Billing
             return sapSaleOrder;
         }
 
-        public SapIncomingPaymentModel MapSapIncomingPayment(int docEntry, string cardCode, decimal docTotal, string transferReference, DateTime? paymentDate)
+        public SapIncomingPaymentModel MapSapIncomingPayment(int docEntry, string cardCode, decimal docTotal, string transferReference, DateTime? paymentDate, bool useWorldPay)
         {
             //Is not implemented because at the moment is not necessary the send the Payment to SAP
             throw new System.NotImplementedException();

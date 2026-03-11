@@ -56,7 +56,7 @@ namespace Doppler.Sap.Factory
                         dequeuedTask.BillingRequest.TransactionApproved)
                     {
                         var response = JsonConvert.DeserializeObject<SapSaleOrderInvoiceResponse>(sapResponse.SapResponseContent);
-                        return await SendIncomingPaymentToSap(serviceSetting, sapSystem, existentInvoice ?? response, dequeuedTask.BillingRequest.TransferReference, dequeuedTask.BillingRequest.PaymentDate);
+                        return await SendIncomingPaymentToSap(serviceSetting, sapSystem, existentInvoice ?? response, dequeuedTask.BillingRequest.TransferReference, dequeuedTask.BillingRequest.PaymentDate, dequeuedTask.BillingRequest.UseWorldPay);
                     }
                 }
                 else
@@ -86,10 +86,10 @@ namespace Doppler.Sap.Factory
             }
         }
 
-        private async Task<SapTaskResult> SendIncomingPaymentToSap(SapServiceConfig serviceSetting, string sapSystem, SapSaleOrderInvoiceResponse response, string transferReference, DateTime? paymentDate)
+        private async Task<SapTaskResult> SendIncomingPaymentToSap(SapServiceConfig serviceSetting, string sapSystem, SapSaleOrderInvoiceResponse response, string transferReference, DateTime? paymentDate, bool useWorldPay)
         {
             var billingMapper = GetMapper(sapSystem);
-            var incomingPaymentRequest = billingMapper.MapSapIncomingPayment(response.DocEntry, response.CardCode, response.DocTotal, transferReference, paymentDate);
+            var incomingPaymentRequest = billingMapper.MapSapIncomingPayment(response.DocEntry, response.CardCode, response.DocTotal, transferReference, paymentDate, useWorldPay);
 
             var message = new HttpRequestMessage
             {

@@ -19,6 +19,7 @@ namespace Doppler.Sap.Mappers.Billing
         private const string _costingCode4 = "NOAPLI4";
         private const string _currencyCode = "$";
         private const string _transferAccount = "1.1.01.2.003";
+        private const string _wordPayTransferAccount = "1.1.01.2.002";
         private const string _uClaseCashfloCaja = "Cobros por ventas Doppler";
         private const int _invoiceType = 13;
 
@@ -84,7 +85,8 @@ namespace Doppler.Sap.Mappers.Billing
                 DocDueDate = date,
                 TaxDate = date,
                 InvoiceId = billingRequest.InvoiceId,
-                PaymentDate = paymentDate
+                PaymentDate = paymentDate,
+                UseWorldPay = billingRequest.UseWorldPay
             };
 
             var itemCode = _sapBillingItemsService.GetItemCode(billingRequest.PlanType, billingRequest.CreditsOrSubscribersQuantity, billingRequest.IsCustomPlan);
@@ -217,7 +219,7 @@ namespace Doppler.Sap.Mappers.Billing
             return sapSaleOrder;
         }
 
-        public SapIncomingPaymentModel MapSapIncomingPayment(int docEntry, string cardCode, decimal docTotal, string transferReference, DateTime? paymentDate)
+        public SapIncomingPaymentModel MapSapIncomingPayment(int docEntry, string cardCode, decimal docTotal, string transferReference, DateTime? paymentDate, bool useWorldPay)
         {
             var date = (paymentDate ?? _dateTimeProvider.GetDateByTimezoneId(_dateTimeProvider.UtcNow, _timezoneConfig.InvoicesTimeZone)).ToString("yyyy-MM-dd");
 
@@ -229,7 +231,7 @@ namespace Doppler.Sap.Mappers.Billing
                 CardCode = cardCode,
                 DocType = "rCustomer",
                 DocCurrency = _currencyCode,
-                TransferAccount = _transferAccount,
+                TransferAccount = useWorldPay ? _wordPayTransferAccount : _transferAccount,
                 TransferSum = docTotal,
                 JournalRemarks = $"Incoming Payments - {cardCode}",
                 TransferReference = transferReference,
