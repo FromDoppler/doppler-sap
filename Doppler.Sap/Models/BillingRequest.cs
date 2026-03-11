@@ -38,5 +38,6 @@ namespace Doppler.Sap.Models
         public DateTime? PaymentDate { get; set; }
         public bool IsUpSelling { get; set; }
         public IList<AdditionalServiceModel> AdditionalServices { get; set; }
+        public bool UseWorldPay { get; set; }
     }
 }
