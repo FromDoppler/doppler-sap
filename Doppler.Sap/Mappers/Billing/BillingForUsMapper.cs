@@ -251,7 +251,7 @@ namespace Doppler.Sap.Mappers.Billing
             return newIncomingPayment;
         }
 
-        public SapOutgoingPaymentModel MapSapOutgoingPayment(SapCreditNoteResponse sapCreditNoteResponse, string transferReference)
+        public SapOutgoingPaymentModel MapSapOutgoingPayment(SapCreditNoteResponse sapCreditNoteResponse, string transferReference, bool useWorldPay)
         {
             var newIncomingPayment = new SapOutgoingPaymentModel
             {
@@ -261,7 +261,7 @@ namespace Doppler.Sap.Mappers.Billing
                 CardCode = sapCreditNoteResponse.CardCode,
                 DocType = "rCustomer",
                 DocCurrency = _currencyCode,
-                TransferAccount = _transferAccount,
+                TransferAccount = useWorldPay ? _wordPayTransferAccount : _transferAccount,
                 TransferSum = sapCreditNoteResponse.DocTotal,
                 JournalRemarks = $"Outgoing Payments - {sapCreditNoteResponse.CardCode}",
                 TransferReference = transferReference,
