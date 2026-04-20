@@ -156,6 +156,7 @@ namespace Doppler.Sap.Mappers.Billing
                             }
                         case AdditionalServiceTypeEnum.OnSite:
                         case AdditionalServiceTypeEnum.PushNotification:
+                        case AdditionalServiceTypeEnum.EcoAI:
                             {
                                 var addOnsItems = GetAddOnItems(billingRequest, currencyCode, additionalService);
                                 foreach (SapDocumentLineModel addOnsItem in addOnsItems)
@@ -481,7 +482,11 @@ namespace Doppler.Sap.Mappers.Billing
                 CostingCode4 = _costingCode4
             };
 
-            var addOnType = additionalService.Type == AdditionalServiceTypeEnum.OnSite ? "OnSite" : "Notificaciones Push";
+            var addOnType = additionalService.Type == AdditionalServiceTypeEnum.OnSite ?
+                "OnSite" :
+                additionalService.Type == AdditionalServiceTypeEnum.PushNotification ?
+                "Push Notifications" :
+                "Eco IA";
 
             var freeText = new
             {
