@@ -679,5 +679,15 @@
         "description": "PN envíos excedentes"
       }
     ]
+  },
+  {
+    "Plantype": 11, //Eco IA
+    "PlanDescription": [
+      {
+        "ItemCode": "4.6.1",
+        "Quantity": 1,
+        "description": "ECO AI"
+      }
+    ]
   }
 ]
