@@ -126,7 +126,7 @@ namespace Doppler.Sap.Factory
         {
             var message = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{_sapServiceConfig.BaseServerUrl}{_sapServiceConfig.BusinessPartnerConfig.Endpoint}('{cardCode}')"),
+                RequestUri = new Uri($"{_sapServiceConfig.BaseServerUrl}{_sapServiceConfig.BusinessPartnerConfig.Endpoint}('{cardCode}')?$filter=Valid eq 'tYES'"),
                 Method = HttpMethod.Get
             };
 
