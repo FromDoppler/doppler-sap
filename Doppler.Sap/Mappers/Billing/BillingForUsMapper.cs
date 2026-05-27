@@ -294,7 +294,8 @@ namespace Doppler.Sap.Mappers.Billing
                 TransactionApproved = updateBillingRequest.TransactionApproved,
                 TransferReference = updateBillingRequest.TransferReference,
                 U_DPL_INV_ID = updateBillingRequest.InvoiceId,
-                PaymentDate = updateBillingRequest.PaymentDate
+                PaymentDate = updateBillingRequest.PaymentDate,
+                TransferAccount = updateBillingRequest.UseWorldPay ? _wordPayTransferAccount : _transferAccount,
             };
         }
 
