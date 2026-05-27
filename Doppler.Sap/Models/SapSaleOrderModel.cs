@@ -28,5 +28,6 @@ namespace Doppler.Sap.Models
         public string TransferReference { get; set; }
         public DateTime? PaymentDate { get; set; }
         public bool UseWorldPay { get; set; }
+        public string TransferAccount { get; set; }
     }
 }
